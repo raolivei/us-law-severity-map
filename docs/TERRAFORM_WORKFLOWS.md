@@ -23,6 +23,7 @@ This project uses GitHub Actions to provide Atlantis-like functionality for Terr
 **Triggers**: When PR is opened/updated and touches Terraform files
 
 **What it does**:
+
 1. ✅ Checks Terraform formatting
 2. ✅ Initializes Terraform
 3. ✅ Validates configuration
@@ -31,6 +32,7 @@ This project uses GitHub Actions to provide Atlantis-like functionality for Terr
 6. ✅ Fails if plan has errors
 
 **Example PR Comment**:
+
 ```
 🏗️ Terraform Plan Results
 
@@ -41,9 +43,9 @@ This project uses GitHub Actions to provide Atlantis-like functionality for Terr
 
 <details>
   <summary>Show Plan</summary>
-  
+
   Terraform will perform the following actions:
-  
+
   # aws_s3_bucket.website will be created
   + resource "aws_s3_bucket" "website" {
       + id = "us-law-severity-map"
@@ -62,6 +64,7 @@ To apply this plan, merge this PR
 **Triggers**: When changes are merged to `main` branch
 
 **What it does**:
+
 1. ✅ Initializes Terraform
 2. ✅ Applies changes automatically
 3. ✅ Captures outputs (URLs, bucket names, etc.)
@@ -69,6 +72,7 @@ To apply this plan, merge this PR
 5. ✅ Uploads apply log as artifact
 
 **Example Success Comment**:
+
 ```
 ✅ Terraform Apply Successful
 
@@ -94,12 +98,14 @@ Commit: abc123def456
 **Triggers**: Manual workflow dispatch only
 
 **What it does**:
+
 1. ⚠️ Requires typing "destroy" to confirm
 2. ✅ Destroys all infrastructure
 3. ✅ Creates issue documenting destruction
 4. ✅ Uploads destroy log
 
 **How to Run**:
+
 1. Go to Actions tab in GitHub
 2. Select "Terraform Destroy (Manual)"
 3. Click "Run workflow"
@@ -162,18 +168,18 @@ git push origin test/terraform-workflows
 
 ### This Setup vs Atlantis
 
-| Feature | This (GitHub Actions) | Atlantis | Winner |
-|---------|----------------------|----------|---------|
-| **Cost** | $0/month | $12-50/month | 🏆 GitHub Actions |
-| **Setup Time** | 5 minutes | 2-4 hours | 🏆 GitHub Actions |
-| **Maintenance** | None | Server updates | 🏆 GitHub Actions |
-| **Plan on PR** | ✅ Yes | ✅ Yes | Tie |
-| **Apply on Merge** | ✅ Yes | ✅ Yes | Tie |
-| **PR Comments** | ✅ Yes | ✅ Yes | Tie |
-| **Format Check** | ✅ Yes | ❌ No | 🏆 GitHub Actions |
-| **Validation** | ✅ Yes | ❌ No | 🏆 GitHub Actions |
-| **Destroy Safety** | ✅ Manual only | ⚠️ Can be automated | 🏆 GitHub Actions |
-| **Audit Trail** | ✅ GitHub logs | ✅ Atlantis logs | Tie |
+| Feature            | This (GitHub Actions) | Atlantis            | Winner            |
+| ------------------ | --------------------- | ------------------- | ----------------- |
+| **Cost**           | $0/month              | $12-50/month        | 🏆 GitHub Actions |
+| **Setup Time**     | 5 minutes             | 2-4 hours           | 🏆 GitHub Actions |
+| **Maintenance**    | None                  | Server updates      | 🏆 GitHub Actions |
+| **Plan on PR**     | ✅ Yes                | ✅ Yes              | Tie               |
+| **Apply on Merge** | ✅ Yes                | ✅ Yes              | Tie               |
+| **PR Comments**    | ✅ Yes                | ✅ Yes              | Tie               |
+| **Format Check**   | ✅ Yes                | ❌ No               | 🏆 GitHub Actions |
+| **Validation**     | ✅ Yes                | ❌ No               | 🏆 GitHub Actions |
+| **Destroy Safety** | ✅ Manual only        | ⚠️ Can be automated | 🏆 GitHub Actions |
+| **Audit Trail**    | ✅ GitHub logs        | ✅ Atlantis logs    | Tie               |
 
 **Verdict**: GitHub Actions wins for small teams! 🎉
 
@@ -182,11 +188,13 @@ git push origin test/terraform-workflows
 ## 🔒 Security Best Practices
 
 ### 1. Use Environment Secrets
+
 ```yaml
-environment: production  # Requires approval
+environment: production # Requires approval
 ```
 
 ### 2. Limit Permissions
+
 ```yaml
 permissions:
   contents: read
@@ -195,11 +203,13 @@ permissions:
 ```
 
 ### 3. Branch Protection
+
 - Require PR reviews before merge
 - Require status checks to pass
 - Require branches to be up to date
 
 ### 4. AWS IAM Policy
+
 Minimum required permissions:
 
 ```json
@@ -208,12 +218,7 @@ Minimum required permissions:
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": [
-        "s3:*",
-        "cloudfront:*",
-        "acm:*",
-        "route53:*"
-      ],
+      "Action": ["s3:*", "cloudfront:*", "acm:*", "route53:*"],
       "Resource": "*"
     }
   ]
@@ -225,6 +230,7 @@ Minimum required permissions:
 ## 📝 Workflow Files
 
 ### Location
+
 ```
 .github/workflows/
 ├── terraform-plan.yml      # Plan on PR
@@ -235,12 +241,12 @@ Minimum required permissions:
 
 ### Triggers Summary
 
-| Workflow | Trigger | Automatic |
-|----------|---------|-----------|
-| `terraform-plan.yml` | PR with terraform changes | ✅ Yes |
-| `terraform-apply.yml` | Push to main (terraform changes) | ✅ Yes |
-| `terraform-destroy.yml` | Manual dispatch | ❌ No |
-| `deploy-to-s3.yml` | Push to main (app changes) | ✅ Yes |
+| Workflow                | Trigger                          | Automatic |
+| ----------------------- | -------------------------------- | --------- |
+| `terraform-plan.yml`    | PR with terraform changes        | ✅ Yes    |
+| `terraform-apply.yml`   | Push to main (terraform changes) | ✅ Yes    |
+| `terraform-destroy.yml` | Manual dispatch                  | ❌ No     |
+| `deploy-to-s3.yml`      | Push to main (app changes)       | ✅ Yes    |
 
 ---
 
@@ -249,6 +255,7 @@ Minimum required permissions:
 ### Plan Fails with "Error: No valid credential sources"
 
 **Solution**: Check GitHub Secrets are configured correctly
+
 ```bash
 # Verify secrets exist (in GitHub UI)
 Settings → Secrets → AWS_ACCESS_KEY_ID
@@ -258,6 +265,7 @@ Settings → Secrets → AWS_SECRET_ACCESS_KEY
 ### Apply Fails with "Backend not configured"
 
 **Solution**: Ensure Terraform init runs successfully
+
 ```yaml
 - name: Terraform Init
   run: terraform init
@@ -266,17 +274,19 @@ Settings → Secrets → AWS_SECRET_ACCESS_KEY
 ### Plan Shows No Changes but Files Were Modified
 
 **Solution**: Check workflow path filters
+
 ```yaml
 paths:
-  - 'terraform/**'  # Must match your structure
+  - "terraform/**" # Must match your structure
 ```
 
 ### Comment Not Appearing on PR
 
 **Solution**: Check workflow permissions
+
 ```yaml
 permissions:
-  pull-requests: write  # Required for comments
+  pull-requests: write # Required for comments
 ```
 
 ---
@@ -301,7 +311,7 @@ permissions:
   uses: 8398a7/action-slack@v3
   with:
     status: ${{ job.status }}
-    text: 'Terraform apply completed!'
+    text: "Terraform apply completed!"
     webhook_url: ${{ secrets.SLACK_WEBHOOK }}
 ```
 
@@ -323,17 +333,20 @@ permissions:
 ## 📈 Monitoring
 
 ### View Workflow Runs
+
 ```
 https://github.com/YOUR_USERNAME/us-law-severity-map/actions
 ```
 
 ### Download Logs
+
 1. Go to Actions tab
 2. Click on workflow run
 3. Click on job
 4. Click "Download log archive" (top right)
 
 ### Check Terraform State
+
 ```bash
 cd terraform/s3-cloudfront
 terraform show
@@ -372,9 +385,9 @@ After setting up these workflows:
 ## 🆘 Support
 
 Issues with workflows? Check:
+
 1. [GitHub Actions Status](https://www.githubstatus.com/)
 2. [Troubleshooting](#-troubleshooting) section above
 3. [GitHub Actions Logs](https://github.com/YOUR_USERNAME/us-law-severity-map/actions)
 
 For project-specific help, open an issue on GitHub.
-

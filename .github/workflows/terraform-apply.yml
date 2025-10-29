@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'terraform/**'
+      - "terraform/**"
 
 permissions:
   contents: read
@@ -13,73 +13,76 @@ permissions:
 
 jobs:
   terraform-apply:
-    name: 'Terraform Apply'
+    name: "Terraform Apply"
     runs-on: ubuntu-latest
     environment: production
-    
+
     defaults:
       run:
         working-directory: terraform/s3-cloudfront
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.6.0
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      
+
       - name: Terraform Init
         run: terraform init
-      
+
       - name: Terraform Apply
         id: apply
         run: |
           terraform apply -auto-approve -input=false | tee apply.log
-      
+        continue-on-error: true
+
       - name: Get Terraform Outputs
+        if: steps.apply.outcome == 'success'
         id: outputs
         run: |
           echo "cloudfront_domain=$(terraform output -raw cloudfront_domain_name)" >> $GITHUB_OUTPUT
           echo "s3_bucket=$(terraform output -raw s3_bucket_name)" >> $GITHUB_OUTPUT
           echo "s3_website=$(terraform output -raw s3_website_endpoint)" >> $GITHUB_OUTPUT
-      
-      - name: Create Issue Comment
+
+      - name: Create Success Comment
+        if: steps.apply.outcome == 'success'
         uses: actions/github-script@v6
         with:
           script: |
             const output = `## ✅ Terraform Apply Successful
-            
+
             Infrastructure has been updated!
-            
+
             ### 📊 Outputs
             - **CloudFront Domain**: \`${{ steps.outputs.outputs.cloudfront_domain }}\`
             - **S3 Bucket**: \`${{ steps.outputs.outputs.s3_bucket }}\`
             - **S3 Website**: \`${{ steps.outputs.outputs.s3_website }}\`
-            
+
             ### 🌐 Access Your Site
             - CloudFront URL: https://${{ steps.outputs.outputs.cloudfront_domain }}
             - S3 Direct: http://${{ steps.outputs.outputs.s3_website }}
-            
+
             **Deployed by**: @${{ github.actor }}
             **Commit**: ${{ github.sha }}
             `;
-            
+
             // Find the merged PR
             const { data: pullRequests } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner: context.repo.owner,
               repo: context.repo.repo,
               commit_sha: context.sha
             });
-            
+
             // Comment on the PR
             if (pullRequests.length > 0) {
               await github.rest.issues.createComment({
@@ -89,7 +92,91 @@ jobs:
                 body: output
               });
             }
-      
+
+      - name: Create Failure Comment
+        if: steps.apply.outcome == 'failure'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            let applyLog = 'Log file not found';
+            try {
+              applyLog = fs.readFileSync('apply.log', 'utf8').slice(-3000); // Last 3000 chars
+            } catch (error) {
+              applyLog = 'Could not read apply.log';
+            }
+
+            const output = `## ❌ Terraform Apply Failed
+
+            Infrastructure update failed! Please review the error below.
+
+            ### 🚨 Error Details
+
+            <details><summary>Show Apply Log (last 3000 characters)</summary>
+
+            \`\`\`
+            ${applyLog}
+            \`\`\`
+
+            </details>
+
+            ### 🔍 Common Causes
+            - AWS quota limits exceeded
+            - Insufficient IAM permissions
+            - Resource naming conflicts
+            - Network/connectivity issues
+            - State lock conflicts
+
+            ### 🛠️ Next Steps
+            1. Check the [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for full logs
+            2. Download the apply.log artifact
+            3. Fix the issue in the Terraform code
+            4. Create a new PR with the fix
+
+            ### 📋 Current State
+            - **Status**: ⚠️ May be partially applied
+            - **Action Required**: Review infrastructure state
+            - **Command**: \`cd terraform/s3-cloudfront && terraform state list\`
+
+            **Failed commit**: ${{ github.sha }}
+            **Triggered by**: @${{ github.actor }}
+            **Workflow**: [View logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `;
+
+            // Find the merged PR
+            const { data: pullRequests } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha
+            });
+
+            // Comment on the PR
+            if (pullRequests.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullRequests[0].number,
+                body: output
+              });
+
+              // Add failure label
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullRequests[0].number,
+                labels: ['terraform-apply-failed', 'needs-attention']
+              });
+            }
+
+            // Also create a new issue for visibility
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 Terraform Apply Failed - Action Required',
+              body: output,
+              labels: ['bug', 'terraform', 'infrastructure', 'urgent']
+            });
+
       - name: Upload Apply Log
         if: always()
         uses: actions/upload-artifact@v3
@@ -98,3 +185,8 @@ jobs:
           path: terraform/s3-cloudfront/apply.log
           retention-days: 30
 
+      - name: Fail the workflow if apply failed
+        if: steps.apply.outcome == 'failure'
+        run: |
+          echo "::error::Terraform apply failed. Check the logs and PR comments for details."
+          exit 1
