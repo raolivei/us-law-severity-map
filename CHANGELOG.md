@@ -2,9 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0] - 2025-10-29
+
+### Added - AWS Deployment & Infrastructure
+
+- **AWS Infrastructure**: Complete S3 + CloudFront deployment with Terraform
+- **GitHub Actions Workflows**:
+  - `terraform-pr-plan.yml` - Automatic plan on pull requests
+  - `terraform-pr-apply.yml` - Manual apply with full control
+  - `deploy-to-s3.yml` - Website deployment automation
+  - `terraform-destroy.yml` - Safe infrastructure teardown
+- **Branch Protection**: Requires successful Terraform Apply before merge
+- **State Management**: S3 backend with DynamoDB locking
+- **Documentation**:
+  - Complete workflow guides and comparisons
+  - AWS cost analysis (~$1-5/month)
+  - Step-by-step deployment instructions
+  - Branch protection setup script
+
+### Changed
+
+- Consolidated workflows: Removed duplicate/unsafe workflows (7 → 4)
+- Simplified documentation: 3 separate docs → 2 comprehensive guides
+- Updated README with complete AWS deployment section
+
+### Security
+
+- Manual apply workflow prevents accidental infrastructure changes
+- Branch protection blocks merge without successful apply
+- Complete audit trail of all infrastructure changes
+- Terraform state locking prevents concurrent modifications
+
 ## [2.0.0] - 2025-10-29
 
-### Added
+### Added - Interactive Visualization
 
 - Interactive click-to-zoom functionality for all 50 states
 - Professional statistics panel with comprehensive data overlay

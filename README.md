@@ -111,6 +111,8 @@ States emphasizing rehabilitation:
 
 ## 💻 Usage
 
+### Local Development
+
 Run the main script:
 
 ```bash
@@ -135,6 +137,93 @@ python main.py
 - **Click and drag** → Pan the map
 - **Use toolbar** → Additional controls (screenshot, reset axes, etc.)
 
+---
+
+## ☁️ AWS Deployment
+
+### 🎯 Recommended Workflow (Safest)
+
+**Manual Apply** - Full control, zero risk:
+
+```bash
+# 1. Create PR with infrastructure changes
+git checkout -b feat/my-changes
+# ... make changes to terraform/ ...
+git push origin feat/my-changes
+
+# 2. Automatic Plan runs on PR
+# Review plan in PR comment
+
+# 3. Manually trigger Apply
+# Go to: Actions → "Terraform Apply (Manual)" → Run workflow
+# Enter PR number → Apply runs
+
+# 4. If successful → Merge PR
+# If failed → Fix code and retry
+```
+
+**Why this approach?**
+- ✅ Test infrastructure before merging
+- ✅ Can't merge until apply succeeds (branch protection)
+- ✅ Complete control over when changes happen
+- ✅ Easy rollback (just close PR)
+
+See [Manual Workflow Guide](docs/MANUAL_TERRAFORM_WORKFLOW.md) for step-by-step instructions.
+
+### ⚡ Quick Deploy (First Time Setup)
+
+```bash
+# 1. Install Terraform
+brew install terraform  # macOS
+# or: snap install terraform  # Linux
+
+# 2. Configure AWS credentials
+export AWS_ACCESS_KEY_ID="your-key"
+export AWS_SECRET_ACCESS_KEY="your-secret"
+
+# 3. Deploy infrastructure
+cd terraform/s3-cloudfront
+terraform init
+terraform apply
+
+# 4. Generate and upload map
+cd ../..
+python main.py
+aws s3 cp us_law_severity_map_interactive.html s3://us-law-severity-map/index.html
+aws cloudfront create-invalidation --distribution-id YOUR_ID --paths "/*"
+```
+
+**Cost**: $1-5/month for 5-50 daily visitors (see [Cost Analysis](docs/AWS_COST_ANALYSIS.md))
+
+### 🤖 GitHub Actions Workflows
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| **Terraform Plan** | Automatic on PR | Shows infrastructure changes |
+| **Terraform Apply** | Manual (you trigger) | Applies infrastructure changes |
+| **Deploy to S3** | Manual | Deploys website HTML |
+| **Terraform Destroy** | Manual with confirmation | Tears down infrastructure |
+
+**Branch Protection**: The `main` branch requires successful Terraform Apply before merge!
+
+### 🏗️ Infrastructure Stack
+
+- **Hosting**: Amazon S3 (static website)
+- **CDN**: CloudFront (global edge caching)
+- **State Management**: S3 + DynamoDB (locking)
+- **CI/CD**: GitHub Actions
+- **IaC**: Terraform
+- **Cost**: ~$1-5/month (mostly CloudFront)
+
+### 📚 Complete Documentation
+
+- 📘 [Manual Workflow Guide](docs/MANUAL_TERRAFORM_WORKFLOW.md) - **Recommended reading!**
+- 🔀 [Workflow Comparison](docs/WORKFLOW_COMPARISON.md) - Compare 3 approaches
+- 📖 [Workflows README](.github/workflows/README.md) - Quick reference
+- 💰 [Cost Analysis](docs/AWS_COST_ANALYSIS.md) - Detailed pricing
+- 🚀 [Deployment Guide](docs/DEPLOYMENT_QUICKSTART.md) - Step-by-step
+- ☁️ [AWS Strategies](docs/AWS_DEPLOYMENT.md) - Architecture options
+
 ## 📊 Data Sources
 
 ### Geographic Data
@@ -158,8 +247,32 @@ us-law-severity-map/
 ├── main.py                                    # Main visualization script
 ├── requirements.txt                           # Python dependencies
 ├── README.md                                  # This file
+├── CHANGELOG.md                               # Version history
 ├── LICENSE                                    # MIT License
-├── PROMPT.md                                  # Project documentation
+├── PROMPT.md                                  # AI recreation prompt
+├── .github/
+│   └── workflows/                             # GitHub Actions
+│       ├── README.md                          # Workflows documentation
+│       ├── terraform-pr-plan.yml              # Automatic plan on PR
+│       ├── terraform-pr-apply.yml             # Manual apply workflow
+│       ├── deploy-to-s3.yml                   # Deploy website to S3
+│       └── terraform-destroy.yml              # Infrastructure teardown
+├── terraform/
+│   └── s3-cloudfront/                         # AWS infrastructure
+│       ├── main.tf                            # Main Terraform config
+│       ├── variables.tf                       # Input variables
+│       ├── outputs.tf                         # Output values
+│       ├── backend.tf                         # S3 state backend
+│       └── README.md                          # Terraform docs
+├── docs/                                      # Documentation
+│   ├── MANUAL_TERRAFORM_WORKFLOW.md           # Recommended workflow guide
+│   ├── WORKFLOW_COMPARISON.md                 # Compare workflow options
+│   ├── AWS_DEPLOYMENT.md                      # Deployment strategies
+│   ├── AWS_COST_ANALYSIS.md                   # Cost breakdown
+│   └── DEPLOYMENT_QUICKSTART.md               # Quick start guide
+├── github/                                    # GitHub configuration
+│   ├── setup-branch-protection.sh             # Branch protection script
+│   └── branch-protection-config.json          # Protection rules config
 ├── data/                                      # Auto-generated shapefiles
 │   └── cb_2022_us_state_20m.*                # US Census shapefiles
 └── us_law_severity_map_interactive.html      # Generated output
@@ -256,6 +369,16 @@ See `requirements.txt` for complete list with version constraints.
 
 ### Completed ✅
 
+**Version 3.0.0 - AWS Deployment & Infrastructure:**
+- [x] Complete AWS deployment with S3 + CloudFront
+- [x] Terraform infrastructure as code
+- [x] GitHub Actions CI/CD workflows
+- [x] Manual apply workflow (safest approach)
+- [x] Branch protection rules
+- [x] Comprehensive deployment documentation
+- [x] Cost analysis and optimization guides
+
+**Version 2.0.0 - Interactive Visualization:**
 - [x] Interactive choropleth map with Plotly
 - [x] Click-to-zoom with statistics panel
 - [x] Comprehensive state statistics display on click
@@ -266,16 +389,33 @@ See `requirements.txt` for complete list with version constraints.
 - [x] HTML export with embedded JavaScript
 - [x] Dynamic statistics panel updates
 
+**Version 1.0.0 - Initial Release:**
+- [x] Static choropleth map
+- [x] Law severity scoring system
+- [x] Death penalty data for all states
+
 ### Potential Future Enhancements 🚀
 
+**Data & Analytics:**
 - [ ] Time-series data showing changes over years
 - [ ] Additional metrics (recidivism, prison conditions, reform index)
 - [ ] County-level granularity
 - [ ] Comparison mode (side-by-side states)
 - [ ] Data export functionality (CSV, JSON)
+
+**Infrastructure & DevOps:**
+- [ ] Custom domain with Route53
+- [ ] Automated testing for Terraform
+- [ ] Multi-environment setup (dev/staging/prod)
+- [ ] CloudWatch monitoring and alerts
+- [ ] Automated cost reporting
+
+**Features:**
 - [ ] API integration for real-time data updates
 - [ ] Mobile-optimized version
 - [ ] Embed code for websites/blogs
+- [ ] PDF report generation
+- [ ] Share functionality (social media)
 
 ## 🤝 Contributing
 
