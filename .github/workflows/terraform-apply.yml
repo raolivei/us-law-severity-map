@@ -1,0 +1,100 @@
+name: Terraform Apply on Merge
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  terraform-apply:
+    name: 'Terraform Apply'
+    runs-on: ubuntu-latest
+    environment: production
+    
+    defaults:
+      run:
+        working-directory: terraform/s3-cloudfront
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.0
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      
+      - name: Terraform Init
+        run: terraform init
+      
+      - name: Terraform Apply
+        id: apply
+        run: |
+          terraform apply -auto-approve -input=false | tee apply.log
+      
+      - name: Get Terraform Outputs
+        id: outputs
+        run: |
+          echo "cloudfront_domain=$(terraform output -raw cloudfront_domain_name)" >> $GITHUB_OUTPUT
+          echo "s3_bucket=$(terraform output -raw s3_bucket_name)" >> $GITHUB_OUTPUT
+          echo "s3_website=$(terraform output -raw s3_website_endpoint)" >> $GITHUB_OUTPUT
+      
+      - name: Create Issue Comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const output = `## ✅ Terraform Apply Successful
+            
+            Infrastructure has been updated!
+            
+            ### 📊 Outputs
+            - **CloudFront Domain**: \`${{ steps.outputs.outputs.cloudfront_domain }}\`
+            - **S3 Bucket**: \`${{ steps.outputs.outputs.s3_bucket }}\`
+            - **S3 Website**: \`${{ steps.outputs.outputs.s3_website }}\`
+            
+            ### 🌐 Access Your Site
+            - CloudFront URL: https://${{ steps.outputs.outputs.cloudfront_domain }}
+            - S3 Direct: http://${{ steps.outputs.outputs.s3_website }}
+            
+            **Deployed by**: @${{ github.actor }}
+            **Commit**: ${{ github.sha }}
+            `;
+            
+            // Find the merged PR
+            const { data: pullRequests } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha
+            });
+            
+            // Comment on the PR
+            if (pullRequests.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullRequests[0].number,
+                body: output
+              });
+            }
+      
+      - name: Upload Apply Log
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-apply-log
+          path: terraform/s3-cloudfront/apply.log
+          retention-days: 30
+
