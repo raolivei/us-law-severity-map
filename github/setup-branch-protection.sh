@@ -59,11 +59,11 @@ gh api \
   --method PUT \
   -H "Accept: application/vnd.github+json" \
   "/repos/${REPO_OWNER}/${REPO_NAME}/branches/${BRANCH}/protection" \
-  -f required_status_checks[strict]=true \
+  -F required_status_checks[strict]=true \
   -f "required_status_checks[contexts][]=Terraform Plan" \
   -f "required_status_checks[contexts][]=Terraform Apply" \
   -F enforce_admins=true \
-  -f required_pull_request_reviews[dismiss_stale_reviews]=true \
+  -F required_pull_request_reviews[dismiss_stale_reviews]=true \
   -F required_pull_request_reviews[require_code_owner_reviews]=false \
   -F required_pull_request_reviews[required_approving_review_count]=0 \
   -F required_linear_history=true \
