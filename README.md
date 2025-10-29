@@ -164,6 +164,7 @@ aws s3 sync . s3://us-law-severity-map --exclude ".git/*" --exclude "*.py"
 ### Automated Deployment
 
 Push to `main` branch → GitHub Actions automatically:
+
 1. ✅ Generates latest map
 2. ✅ Deploys to S3
 3. ✅ Invalidates CloudFront cache
@@ -178,6 +179,7 @@ See [Deployment Guide](docs/DEPLOYMENT_QUICKSTART.md) for details.
 - **IaC**: Terraform
 
 Documentation:
+
 - 📘 [AWS Deployment Guide](docs/AWS_DEPLOYMENT.md)
 - 💰 [Cost Analysis](docs/AWS_COST_ANALYSIS.md)
 - 🚀 [Quick Start](docs/DEPLOYMENT_QUICKSTART.md)

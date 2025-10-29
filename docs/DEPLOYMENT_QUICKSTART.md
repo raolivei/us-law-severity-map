@@ -114,6 +114,7 @@ open https://console.aws.amazon.com/amplify/
 ```
 
 Amplify will:
+
 - ✅ Build your map automatically
 - ✅ Provide HTTPS URL
 - ✅ Auto-deploy on git push
@@ -139,6 +140,7 @@ curl -I https://[YOUR-APP-ID].amplifyapp.com
 ```
 
 You should see:
+
 ```
 HTTP/1.1 200 OK
 Content-Type: text/html
@@ -295,4 +297,3 @@ See `docs/AWS_DEPLOYMENT.md` for advanced configurations.
 ---
 
 **Need Help?** Open an issue on GitHub or consult [AWS Support](https://aws.amazon.com/support/)
-
