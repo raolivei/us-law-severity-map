@@ -299,4 +299,3 @@ jobs:
             - name: Fail workflow if apply failed
               if: steps.apply.outcome == 'failure'
               run: exit 1
-

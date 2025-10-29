@@ -9,6 +9,7 @@ This workflow allows you to **test `terraform apply` BEFORE merging** your PR. T
 ## 🔄 How It Works
 
 ### Traditional Flow (Risky)
+
 ```
 1. Create PR
 2. Plan runs (shows what will happen)
@@ -18,6 +19,7 @@ This workflow allows you to **test `terraform apply` BEFORE merging** your PR. T
 ```
 
 ### New Flow (Safe)
+
 ```
 1. Create PR
 2. Plan runs (shows what will happen)
@@ -52,16 +54,21 @@ Create PR on GitHub.
 ### Step 2: Review the Plan
 
 The workflow will automatically:
+
 - ✅ Run `terraform plan`
 - ✅ Post results as PR comment
 
 **PR Comment Example:**
+
 ```markdown
 ## 🏗️ Terraform Plan Results
 
 #### 📋 Format: ✅ success
+
 #### ⚙️ Init: ✅ success
+
 #### 🤖 Validate: ✅ success
+
 #### 📊 Plan: ✅ success
 
 <details>
@@ -84,6 +91,7 @@ The workflow will automatically:
 Add the label `test-apply` to this PR to run `terraform apply`.
 
 This will:
+
 - ✅ Actually create the infrastructure
 - ✅ Show you if it works in production
 - ✅ Post results here
@@ -95,6 +103,7 @@ This will:
 ### Step 3: Add "test-apply" Label
 
 **In GitHub PR:**
+
 1. Click "Labels" on the right sidebar
 2. Add label: `test-apply`
 
@@ -107,11 +116,13 @@ This will:
 ### Step 4: Watch the Apply Run
 
 Go to "Actions" tab and watch:
+
 - `Terraform Apply (Test)` job running
 - Real infrastructure being created
 - Live logs
 
 **Timeline:**
+
 ```
 ⏱️ Plan job: ~1 minute
 ⏱️ Apply job: ~5-15 minutes (depending on resources)
@@ -122,17 +133,20 @@ Go to "Actions" tab and watch:
 ### Step 5A: If Apply Succeeds ✅
 
 **New PR Comment:**
+
 ```markdown
 ## ✅ Test Apply Successful!
 
 Infrastructure was successfully created/updated!
 
 ### 📊 Outputs
+
 - **CloudFront Domain**: `d123abc.cloudfront.net`
 - **S3 Bucket**: `us-law-severity-map`
 - **S3 Website**: `us-law-severity-map.s3-website-us-east-1.amazonaws.com`
 
 ### 🌐 Test Your Site
+
 - CloudFront: https://d123abc.cloudfront.net
 - S3 Direct: http://us-law-severity-map.s3-website-us-east-1.amazonaws.com
 
@@ -149,10 +163,12 @@ The infrastructure is already live! 🎉
 ```
 
 **Labels Added:**
+
 - ✅ `terraform-apply-success`
 - ✅ `ready-to-merge`
 
 **What to do:**
+
 1. ✅ Test the URLs provided
 2. ✅ Verify everything works
 3. ✅ Click "Merge pull request"
@@ -163,6 +179,7 @@ The infrastructure is already live! 🎉
 ### Step 5B: If Apply Fails ❌
 
 **New PR Comment:**
+
 ```markdown
 ## ❌ Test Apply Failed
 
@@ -190,10 +207,12 @@ DO NOT merge this PR until apply succeeds!
 ```
 
 **Labels Added:**
+
 - ❌ `terraform-apply-failed`
 - ⚠️ `do-not-merge`
 
 **What to do:**
+
 1. ❌ **DO NOT MERGE!**
 2. 🔧 Fix the error in your code
 3. 📝 Push new commit
@@ -279,18 +298,21 @@ git push
 ## ⚡ Quick Commands
 
 ### Test Apply on PR
+
 ```bash
 # Using GitHub CLI
 gh pr edit PR_NUMBER --add-label "test-apply"
 ```
 
 ### Remove Label to Retry
+
 ```bash
 gh pr edit PR_NUMBER --remove-label "test-apply"
 gh pr edit PR_NUMBER --add-label "test-apply"
 ```
 
 ### Check Apply Status
+
 ```bash
 gh run list --workflow="Terraform Plan and Apply on PR"
 gh run view RUN_ID --log
@@ -301,6 +323,7 @@ gh run view RUN_ID --log
 ## 🎯 When to Use This Workflow
 
 ### ✅ Use When:
+
 - Making significant infrastructure changes
 - Changing resource names (risk of conflicts)
 - Adding new AWS services (risk of quota limits)
@@ -308,6 +331,7 @@ gh run view RUN_ID --log
 - Not sure if it will work (always!)
 
 ### ⚠️ Consider Skipping When:
+
 - Tiny changes (like updating a tag value)
 - Very confident (you've done it 100 times)
 - Urgent hotfix (but still risky!)
@@ -318,14 +342,14 @@ gh run view RUN_ID --log
 
 ## 🔄 Workflow Comparison
 
-| Aspect | Old Workflow | New Workflow |
-|--------|-------------|--------------|
-| **When Apply Runs** | After merge | Before merge |
-| **Risk Level** | High (PR already merged) | Low (can still cancel) |
-| **If Apply Fails** | PR merged, must revert | PR not merged, just fix |
-| **Confidence** | Hope it works | Know it works |
-| **Time** | Faster (risky) | Slower (safe) |
-| **Recommended** | No | **Yes!** ✅ |
+| Aspect              | Old Workflow             | New Workflow            |
+| ------------------- | ------------------------ | ----------------------- |
+| **When Apply Runs** | After merge              | Before merge            |
+| **Risk Level**      | High (PR already merged) | Low (can still cancel)  |
+| **If Apply Fails**  | PR merged, must revert   | PR not merged, just fix |
+| **Confidence**      | Hope it works            | Know it works           |
+| **Time**            | Faster (risky)           | Slower (safe)           |
+| **Recommended**     | No                       | **Yes!** ✅             |
 
 ---
 
@@ -350,6 +374,7 @@ gh run view RUN_ID --log
 ### Q: What about rollback?
 
 **A**: If you need to rollback:
+
 ```bash
 # Option 1: Revert the PR
 gh pr revert PR_NUMBER
@@ -379,6 +404,7 @@ terraform destroy
 ## 📊 Success Metrics
 
 After implementing this workflow:
+
 - ✅ **100% confidence** before merging
 - ✅ **Zero** failed merges
 - ✅ **Faster recovery** from issues
@@ -401,6 +427,7 @@ After implementing this workflow:
 ### Label doesn't trigger apply
 
 **Check**:
+
 - Label name is exactly `test-apply` (case-sensitive)
 - Plan job completed successfully first
 - Workflow file is on the branch
@@ -408,6 +435,7 @@ After implementing this workflow:
 ### Apply runs but doesn't comment
 
 **Check**:
+
 - Workflow permissions include `pull-requests: write`
 - GitHub token has correct scopes
 - PR is not from a fork (security limitation)
@@ -415,6 +443,7 @@ After implementing this workflow:
 ### Apply succeeds but infrastructure looks wrong
 
 **Check**:
+
 - Correct AWS account/region
 - Terraform state is not corrupted
 - No manual changes were made
@@ -451,4 +480,3 @@ git checkout -b fix/emergency-rollback
 **Last Updated**: October 29, 2025  
 **Workflow**: `terraform-plan-and-apply.yml`  
 **Status**: Production Ready ✅
-

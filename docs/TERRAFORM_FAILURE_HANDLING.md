@@ -47,12 +47,16 @@ This document explains what happens when Terraform operations fail and how the w
 ```
 
 **PR Comment Example:**
+
 ```markdown
 ## 🏗️ Terraform Plan Results
 
 #### 📋 Terraform Format: ✅ success
+
 #### ⚙️ Terraform Init: ✅ success
+
 #### 🤖 Terraform Validate: ❌ failure
+
 #### 📊 Terraform Plan: ❌ failure
 
 <details>
@@ -68,11 +72,13 @@ This document explains what happens when Terraform operations fail and how the w
 ```
 
 **What You See:**
+
 - ❌ Red X on PR
 - ❌ Cannot merge (if branch protection enabled)
 - 📝 Error details in PR comment
 
 **What To Do:**
+
 1. Fix the Terraform error
 2. Push new commit
 3. Plan runs again automatically
@@ -117,11 +123,12 @@ Infrastructure update failed! Please review the error below.
 ### 🚨 Error Details
 
 <details><summary>Show Apply Log (last 3000 characters)</summary>
-
 ```
-Error: Error creating S3 bucket: BucketAlreadyExists: The requested 
-bucket name is not available. The bucket namespace is shared by all 
+
+Error: Error creating S3 bucket: BucketAlreadyExists: The requested
+bucket name is not available. The bucket namespace is shared by all
 users of the system. Please select a different name and try again.
+
 ```
 
 </details>
@@ -166,23 +173,28 @@ Labels: bug, terraform, infrastructure, urgent
 ### Common Reasons:
 
 1. **Timing Issues**
+
    - Resource available during plan, but taken by someone else during apply
    - Example: S3 bucket name becomes unavailable
 
 2. **Quota Limits**
+
    - Plan doesn't check AWS service quotas
    - Example: "LimitExceededException: You have reached your limit of CloudFront distributions"
 
 3. **Permissions Changes**
+
    - IAM permissions changed between plan and apply
    - Example: Someone revoked CloudFront creation permission
 
 4. **State Drift**
+
    - Someone manually modified infrastructure
    - Terraform state doesn't match reality
    - Example: S3 bucket deleted manually
 
 5. **Network Issues**
+
    - Temporary AWS API unavailability
    - Timeout issues
 
@@ -197,6 +209,7 @@ Labels: bug, terraform, infrastructure, urgent
 ### Step 1: Check Notifications
 
 You'll receive notifications in:
+
 - ✅ GitHub PR comments
 - ✅ New GitHub Issue (labeled "urgent")
 - ✅ GitHub Actions UI (red X)
@@ -245,6 +258,7 @@ terraform state list
 ### Step 5: Fix the Issue
 
 **Option A: Fix and Retry** (most common)
+
 ```bash
 # Fix the issue in terraform code
 git checkout -b fix/terraform-apply-failure
@@ -259,6 +273,7 @@ git push
 ```
 
 **Option B: Manual Cleanup** (if partially applied)
+
 ```bash
 # Destroy what was created
 cd terraform/s3-cloudfront
@@ -268,6 +283,7 @@ terraform destroy -target=aws_s3_bucket.website
 ```
 
 **Option C: Import Existing** (if resource exists)
+
 ```bash
 # Import manually created resource
 terraform import aws_s3_bucket.website bucket-name
@@ -284,6 +300,7 @@ terraform import aws_s3_bucket.website bucket-name
 **Cause**: S3 bucket name already taken globally
 
 **Fix**:
+
 ```hcl
 # terraform/s3-cloudfront/variables.tf
 variable "bucket_name" {
@@ -296,6 +313,7 @@ variable "bucket_name" {
 **Cause**: AWS service quota reached
 
 **Fix**:
+
 ```bash
 # Check current quotas
 aws service-quotas list-service-quotas \
@@ -310,14 +328,12 @@ aws service-quotas list-service-quotas \
 **Cause**: Insufficient IAM permissions
 
 **Fix**:
+
 ```json
 // Add missing permissions to IAM policy
 {
   "Effect": "Allow",
-  "Action": [
-    "s3:CreateBucket",
-    "cloudfront:CreateDistribution"
-  ],
+  "Action": ["s3:CreateBucket", "cloudfront:CreateDistribution"],
   "Resource": "*"
 }
 ```
@@ -327,6 +343,7 @@ aws service-quotas list-service-quotas \
 **Cause**: Resource is being used or modified
 
 **Fix**:
+
 ```bash
 # Wait a few minutes and retry
 # Or check what's using the resource
@@ -339,6 +356,7 @@ aws s3api list-bucket-inventories \
 **Cause**: Another operation is running
 
 **Fix**:
+
 ```bash
 # Wait for other operation to complete
 # Or force unlock (dangerous!)
@@ -384,7 +402,7 @@ terraform workspace new staging
 ```hcl
 resource "aws_cloudfront_distribution" "website" {
   # ... config ...
-  
+
   timeouts {
     create = "45m"
     update = "45m"
@@ -398,7 +416,7 @@ resource "aws_cloudfront_distribution" "website" {
 ```hcl
 resource "aws_cloudfront_distribution" "website" {
   # ... config ...
-  
+
   depends_on = [
     aws_s3_bucket.website,
     aws_s3_bucket_policy.website
@@ -410,11 +428,11 @@ resource "aws_cloudfront_distribution" "website" {
 
 ## 📊 Workflow Behavior Summary
 
-| Scenario | Plan Status | Apply Status | PR Comment | New Issue | Workflow Status |
-|----------|------------|--------------|------------|-----------|-----------------|
-| All Success | ✅ Pass | ✅ Pass | ✅ Success | ❌ No | ✅ Green |
-| Plan Fails | ❌ Fail | 🚫 Not Run | ✅ Error shown | ❌ No | ❌ Red |
-| Apply Fails | ✅ Pass | ❌ Fail | ✅ Error shown | ✅ Yes | ❌ Red |
+| Scenario    | Plan Status | Apply Status | PR Comment     | New Issue | Workflow Status |
+| ----------- | ----------- | ------------ | -------------- | --------- | --------------- |
+| All Success | ✅ Pass     | ✅ Pass      | ✅ Success     | ❌ No     | ✅ Green        |
+| Plan Fails  | ❌ Fail     | 🚫 Not Run   | ✅ Error shown | ❌ No     | ❌ Red          |
+| Apply Fails | ✅ Pass     | ❌ Fail      | ✅ Error shown | ✅ Yes    | ❌ Red          |
 
 ---
 
@@ -450,4 +468,3 @@ Contact maintainer or open issue if:
 
 **Last Updated**: October 29, 2025  
 **Workflow Version**: v2.0 with failure handling
-
