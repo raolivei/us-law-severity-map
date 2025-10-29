@@ -7,8 +7,8 @@ This prompt can be used with AI assistants (Claude, ChatGPT, etc.) to recreate t
 ## Main Prompt
 
 ```
-Create a complete, professional data visualization project that displays US law severity 
-by state with comprehensive crime statistics. The project should be production-ready 
+Create a complete, professional data visualization project that displays US law severity
+by state with comprehensive crime statistics. The project should be production-ready
 with AWS deployment infrastructure.
 
 PROJECT SPECIFICATIONS:
@@ -23,7 +23,7 @@ PROJECT SPECIFICATIONS:
    - Professional UI with smooth animations
 
 2. DATA TO DISPLAY:
-   
+
    Law Severity Metrics:
    - Severity score (0-100 scale):
      * 100: Very Severe (death penalty active)
@@ -31,16 +31,16 @@ PROJECT SPECIFICATIONS:
      * 40-60: Moderate (balanced approach)
      * 20-40: Lenient (rehabilitation focus)
    - Death penalty status (Active/Abolished/Moratorium)
-   
+
    Crime Statistics (per 100,000 population):
    - Murder rate (with US average comparison)
    - Gun death rate (with US average comparison)
    - Traffic fatality rate (with US average comparison)
-   
+
    Demographics:
    - Population (2023 estimates)
    - Incarceration rate (per 100k)
-   
+
    Contextual Information:
    - Historical notes for each state
    - Notable policies and facts
@@ -69,7 +69,7 @@ PROJECT SPECIFICATIONS:
    - Clean, professional design
 
 5. AWS DEPLOYMENT INFRASTRUCTURE:
-   
+
    Terraform (Infrastructure as Code):
    - S3 bucket for static website hosting
    - CloudFront CDN distribution with caching
@@ -77,7 +77,7 @@ PROJECT SPECIFICATIONS:
    - Versioning enabled on S3
    - Origin Access Identity for security
    - Variables for easy configuration
-   
+
    GitHub Actions CI/CD:
    - Automatic deployment on push to main branch
    - Python environment setup
@@ -86,7 +86,7 @@ PROJECT SPECIFICATIONS:
    - Sync to S3 with proper exclusions
    - Invalidate CloudFront cache
    - Use secrets for AWS credentials
-   
+
    Cost Optimization:
    - Target: $0.00-$0.50/month for 5-50 visits/day
    - Use free tier eligible services
@@ -95,7 +95,7 @@ PROJECT SPECIFICATIONS:
    - S3 lifecycle policies
 
 6. DOCUMENTATION REQUIRED:
-   
+
    README.md:
    - Project overview with features
    - Installation instructions
@@ -103,12 +103,12 @@ PROJECT SPECIFICATIONS:
    - Data sources and methodology
    - Interaction guide
    - Contributing guidelines
-   
+
    CHANGELOG.md:
    - Version history (currently v2.0.0)
    - Added/Changed/Fixed format
    - Keep it concise
-   
+
    AWS_DEPLOYMENT.md:
    - Multiple deployment options
    - S3 + CloudFront (recommended)
@@ -117,21 +117,21 @@ PROJECT SPECIFICATIONS:
    - EKS comparison (not recommended for this scale)
    - Security best practices
    - Monitoring and cost tracking
-   
+
    AWS_COST_ANALYSIS.md:
    - Detailed breakdown by service
    - Monthly and annual projections
    - Scaling scenarios
    - Comparison with alternatives
    - Cost optimization tips
-   
+
    DEPLOYMENT_QUICKSTART.md:
    - 3 deployment options with step-by-step
    - Manual S3 (5 min)
    - Terraform (10 min)
    - AWS Amplify (2 min)
    - Troubleshooting section
-   
+
    COST_SUMMARY.txt:
    - ASCII table format
    - Visual cost breakdown
@@ -140,137 +140,139 @@ PROJECT SPECIFICATIONS:
    - Service comparisons
 
 7. PROJECT STRUCTURE:
-   ```
-   us-law-severity-map/
-   ├── main.py                      # Main application
-   ├── requirements.txt             # Python dependencies
-   ├── README.md                    # Main documentation
-   ├── CHANGELOG.md                 # Version history
-   ├── PROMPT.md                    # This file
-   ├── LICENSE                      # MIT License
-   ├── .gitignore                   # Git ignore rules
-   ├── data/                        # Auto-downloaded shapefiles
-   ├── docs/                        # Documentation
-   │   ├── AWS_DEPLOYMENT.md
-   │   ├── AWS_COST_ANALYSIS.md
-   │   ├── DEPLOYMENT_QUICKSTART.md
-   │   └── COST_SUMMARY.txt
-   ├── aws/                         # AWS configurations
-   │   └── s3-bucket-policy.json
-   ├── terraform/                   # Infrastructure as Code
-   │   └── s3-cloudfront/
-   │       ├── main.tf
-   │       ├── variables.tf
-   │       └── README.md
-   └── .github/                     # CI/CD workflows
-       └── workflows/
-           └── deploy-to-s3.yml
-   ```
+```
+
+us-law-severity-map/
+├── main.py # Main application
+├── requirements.txt # Python dependencies
+├── README.md # Main documentation
+├── CHANGELOG.md # Version history
+├── PROMPT.md # This file
+├── LICENSE # MIT License
+├── .gitignore # Git ignore rules
+├── data/ # Auto-downloaded shapefiles
+├── docs/ # Documentation
+│ ├── AWS_DEPLOYMENT.md
+│ ├── AWS_COST_ANALYSIS.md
+│ ├── DEPLOYMENT_QUICKSTART.md
+│ └── COST_SUMMARY.txt
+├── aws/ # AWS configurations
+│ └── s3-bucket-policy.json
+├── terraform/ # Infrastructure as Code
+│ └── s3-cloudfront/
+│ ├── main.tf
+│ ├── variables.tf
+│ └── README.md
+└── .github/ # CI/CD workflows
+└── workflows/
+└── deploy-to-s3.yml
+
+````
 
 8. STATE DATA (All 50 states with complete info):
-   - Use realistic estimates for crime statistics
-   - Murder rates: 1.3 (NH) to 20.5 (MS)
-   - Gun death rates: 3.7 (MA) to 28.6 (MS)
-   - Traffic fatalities: 5.1 (MA) to 22.6 (WY)
-   - Include all death penalty states correctly
-   - Add historical context for each state
+- Use realistic estimates for crime statistics
+- Murder rates: 1.3 (NH) to 20.5 (MS)
+- Gun death rates: 3.7 (MA) to 28.6 (MS)
+- Traffic fatalities: 5.1 (MA) to 22.6 (WY)
+- Include all death penalty states correctly
+- Add historical context for each state
 
 9. KEY IMPLEMENTATION DETAILS:
-   
-   JavaScript Event Handling:
-   - Use Plotly's .on('plotly_click') for state clicks
-   - Proper event delegation
-   - Update HTML overlay dynamically
-   - Smooth map re-centering with state-specific coordinates
-   - Handle double-click for reset
-   
-   State Centering:
-   - Each state has specific lat/lon center coordinates
-   - Appropriate zoom levels (3.5-8.5) based on state size
-   - Smaller states (RI, DE) get higher zoom
-   - Large states (AK, TX) get lower zoom
-   
-   CSS Animations:
-   - Slide-in effect for statistics panel
-   - Transform and opacity transitions
-   - Smooth 0.3s ease-out timing
-   
-   Data Embedding:
-   - State data as JSON in JavaScript
-   - Proper JSON escaping in f-strings
-   - US averages pre-calculated
-   - Efficient data access
+
+JavaScript Event Handling:
+- Use Plotly's .on('plotly_click') for state clicks
+- Proper event delegation
+- Update HTML overlay dynamically
+- Smooth map re-centering with state-specific coordinates
+- Handle double-click for reset
+
+State Centering:
+- Each state has specific lat/lon center coordinates
+- Appropriate zoom levels (3.5-8.5) based on state size
+- Smaller states (RI, DE) get higher zoom
+- Large states (AK, TX) get lower zoom
+
+CSS Animations:
+- Slide-in effect for statistics panel
+- Transform and opacity transitions
+- Smooth 0.3s ease-out timing
+
+Data Embedding:
+- State data as JSON in JavaScript
+- Proper JSON escaping in f-strings
+- US averages pre-calculated
+- Efficient data access
 
 10. REQUIREMENTS.TXT CONTENTS:
-    ```
-    geopandas>=0.14.0,<1.0.0
-    matplotlib>=3.8.0,<4.0.0
-    requests>=2.31.0,<3.0.0
-    plotly>=5.18.0,<6.0.0
-    kaleido>=0.2.1,<1.0.0
-    pandas>=2.1.0,<3.0.0
-    shapely>=2.0.0,<3.0.0
-    fiona>=1.9.0,<2.0.0
-    pyproj>=3.6.0,<4.0.0
-    ```
+ ```
+ geopandas>=0.14.0,<1.0.0
+ matplotlib>=3.8.0,<4.0.0
+ requests>=2.31.0,<3.0.0
+ plotly>=5.18.0,<6.0.0
+ kaleido>=0.2.1,<1.0.0
+ pandas>=2.1.0,<3.0.0
+ shapely>=2.0.0,<3.0.0
+ fiona>=1.9.0,<2.0.0
+ pyproj>=3.6.0,<4.0.0
+ ```
 
 11. GITHUB ACTIONS WORKFLOW:
-    - Trigger on push to main
-    - Python 3.11 environment
-    - Install dependencies with pip cache
-    - Generate map with main.py
-    - Configure AWS credentials from secrets
-    - Sync to S3 with exclusions
-    - Invalidate CloudFront cache
-    - Use proper AWS CLI commands
+ - Trigger on push to main
+ - Python 3.11 environment
+ - Install dependencies with pip cache
+ - Generate map with main.py
+ - Configure AWS credentials from secrets
+ - Sync to S3 with exclusions
+ - Invalidate CloudFront cache
+ - Use proper AWS CLI commands
 
 12. TERRAFORM CONFIGURATION:
-    - Provider: AWS (~> 5.0)
-    - S3 bucket with website configuration
-    - Public access block settings
-    - Bucket policy for public read
-    - Versioning enabled
-    - CloudFront with OAI
-    - Price class: PriceClass_100 (North America/Europe)
-    - HTTPS redirect
-    - Compression enabled
-    - Outputs: bucket name, website endpoint, CloudFront domain
+ - Provider: AWS (~> 5.0)
+ - S3 bucket with website configuration
+ - Public access block settings
+ - Bucket policy for public read
+ - Versioning enabled
+ - CloudFront with OAI
+ - Price class: PriceClass_100 (North America/Europe)
+ - HTTPS redirect
+ - Compression enabled
+ - Outputs: bucket name, website endpoint, CloudFront domain
 
 13. QUALITY REQUIREMENTS:
-    - Professional code with comments
-    - Type hints where appropriate
-    - Error handling for shapefile download
-    - Responsive design
-    - Cross-browser compatibility
-    - No linter errors
-    - Clean git history
-    - Proper .gitignore
+ - Professional code with comments
+ - Type hints where appropriate
+ - Error handling for shapefile download
+ - Responsive design
+ - Cross-browser compatibility
+ - No linter errors
+ - Clean git history
+ - Proper .gitignore
 
 14. IMPORTANT NOTES:
-    - DO NOT use matplotlib for the main visualization
-    - DO use Plotly Mapbox for interactivity
-    - Statistics panel MUST be HTML overlay, not Plotly annotation
-    - All text in English (no Portuguese)
-    - Cost target: $0.00-$0.50/month
-    - Free tier eligible architecture
-    - Click should zoom AND show stats simultaneously
-    - Double-click should reset AND hide stats
-    - Use state-specific zoom centers, not generic zoom
+ - DO NOT use matplotlib for the main visualization
+ - DO use Plotly Mapbox for interactivity
+ - Statistics panel MUST be HTML overlay, not Plotly annotation
+ - All text in English (no Portuguese)
+ - Cost target: $0.00-$0.50/month
+ - Free tier eligible architecture
+ - Click should zoom AND show stats simultaneously
+ - Double-click should reset AND hide stats
+ - Use state-specific zoom centers, not generic zoom
 
 15. TESTING CHECKLIST:
-    - [ ] Map loads without errors
-    - [ ] All 50 states clickable
-    - [ ] Statistics panel appears on click
-    - [ ] Panel positioned correctly (right side, centered)
-    - [ ] Close button works
-    - [ ] Double-click resets view
-    - [ ] Zoom centers correctly on each state
-    - [ ] US averages calculated correctly
-    - [ ] All data displays properly
-    - [ ] HTML exports correctly
-    - [ ] Terraform deploys successfully
-    - [ ] GitHub Actions workflow runs
-    - [ ] No console errors in browser
+ - [ ] Map loads without errors
+ - [ ] All 50 states clickable
+ - [ ] Statistics panel appears on click
+ - [ ] Panel positioned correctly (right side, centered)
+ - [ ] Close button works
+ - [ ] Double-click resets view
+ - [ ] Zoom centers correctly on each state
+ - [ ] US averages calculated correctly
+ - [ ] All data displays properly
+ - [ ] HTML exports correctly
+ - [ ] Terraform deploys successfully
+ - [ ] GitHub Actions workflow runs
+ - [ ] No console errors in browser
 
 DELIVERABLES:
 1. Complete working Python application
@@ -287,19 +289,21 @@ OUTPUT FORMAT:
 - Test locally before AWS deployment
 - Provide step-by-step deployment instructions
 - Include cost estimates
-```
+````
 
 ---
 
 ## Usage Instructions
 
 ### With Claude (Anthropic)
+
 ```
 Copy the entire "Main Prompt" section above and paste it into a new Claude conversation.
 Claude has excellent code generation and can handle complex multi-file projects.
 ```
 
 ### With ChatGPT (OpenAI)
+
 ```
 Copy the prompt and paste into ChatGPT-4 or ChatGPT-4 Turbo.
 May need to break into smaller parts for very long conversations.
@@ -307,6 +311,7 @@ Use Code Interpreter for testing the Python code.
 ```
 
 ### With Cursor AI
+
 ```
 Open Cursor IDE and use Composer mode.
 Paste the prompt to generate all files in your workspace.
@@ -317,13 +322,15 @@ Cursor can directly create the file structure and edit multiple files.
 
 1. **Start Fresh**: Use a new conversation to avoid context confusion
 
-2. **Specify Environment**: 
+2. **Specify Environment**:
+
    ```
    Additional context: I'm on macOS with Python 3.11 installed.
    AWS CLI is configured. I want to use Terraform for deployment.
    ```
 
 3. **Request Step-by-Step**:
+
    ```
    After generating the code, walk me through:
    1. Local setup and testing
@@ -332,6 +339,7 @@ Cursor can directly create the file structure and edit multiple files.
    ```
 
 4. **Ask for Clarifications**:
+
    ```
    Before starting, confirm:
    - What Python version do you recommend?
@@ -352,6 +360,7 @@ Cursor can directly create the file structure and edit multiple files.
 ## Key Success Factors
 
 ### ✅ Must Have
+
 - Plotly for interactivity (NOT matplotlib static map)
 - HTML overlay for statistics panel (NOT Plotly annotation)
 - State-specific zoom coordinates for all 50 states
@@ -363,6 +372,7 @@ Cursor can directly create the file structure and edit multiple files.
 - Comprehensive documentation
 
 ### ❌ Common Mistakes to Avoid
+
 - Using matplotlib instead of Plotly
 - Using Plotly annotations instead of HTML overlay
 - Generic zoom that doesn't center properly
@@ -380,6 +390,7 @@ Cursor can directly create the file structure and edit multiple files.
 After generating the base project, you can request:
 
 ### Visual Enhancements
+
 ```
 Make the map more visually appealing by:
 - Adding a gradient background
@@ -389,6 +400,7 @@ Make the map more visually appealing by:
 ```
 
 ### Additional Features
+
 ```
 Add these features:
 - Search bar to find states
@@ -399,6 +411,7 @@ Add these features:
 ```
 
 ### Infrastructure Improvements
+
 ```
 Enhance the AWS setup:
 - Add custom domain with Route53
@@ -424,16 +437,19 @@ Enhance the AWS setup:
 After using this prompt, you should have:
 
 1. ✅ **Functional Project**
+
    - Interactive map working locally
    - All 50 states with complete data
    - Professional UI with animations
 
 2. ✅ **AWS Infrastructure**
+
    - Terraform files ready to deploy
    - GitHub Actions workflow configured
    - Estimated cost: $0.00-$0.50/month
 
 3. ✅ **Complete Documentation**
+
    - README with instructions
    - Deployment guides
    - Cost analysis
@@ -452,12 +468,14 @@ After using this prompt, you should have:
 If the AI generates incorrect code:
 
 1. **Re-iterate Requirements**:
+
    ```
    The map needs to use Plotly, not matplotlib.
    Please regenerate using plotly.graph_objects.Choroplethmapbox
    ```
 
 2. **Request Specific Fixes**:
+
    ```
    The statistics panel is not showing. The issue is that it should be
    an HTML div element, not a Plotly annotation. Please fix.
