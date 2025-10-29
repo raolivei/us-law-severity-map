@@ -111,6 +111,8 @@ States emphasizing rehabilitation:
 
 ## 💻 Usage
 
+### Local Development
+
 Run the main script:
 
 ```bash
@@ -134,6 +136,51 @@ python main.py
 - **Scroll wheel** → Zoom in/out
 - **Click and drag** → Pan the map
 - **Use toolbar** → Additional controls (screenshot, reset axes, etc.)
+
+---
+
+## ☁️ AWS Deployment
+
+### Quick Deploy (5 minutes)
+
+```bash
+# 1. Install Terraform
+brew install terraform  # macOS
+# or: snap install terraform  # Linux
+
+# 2. Deploy infrastructure
+cd terraform/s3-cloudfront
+terraform init
+terraform apply
+
+# 3. Upload map
+cd ../..
+python main.py
+aws s3 sync . s3://us-law-severity-map --exclude ".git/*" --exclude "*.py"
+```
+
+**Cost**: $0.00 - $0.50/month (see [Cost Analysis](docs/AWS_COST_ANALYSIS.md))
+
+### Automated Deployment
+
+Push to `main` branch → GitHub Actions automatically:
+1. ✅ Generates latest map
+2. ✅ Deploys to S3
+3. ✅ Invalidates CloudFront cache
+
+See [Deployment Guide](docs/DEPLOYMENT_QUICKSTART.md) for details.
+
+### Infrastructure
+
+- **Hosting**: Amazon S3 (static website)
+- **CDN**: CloudFront (global distribution)
+- **CI/CD**: GitHub Actions
+- **IaC**: Terraform
+
+Documentation:
+- 📘 [AWS Deployment Guide](docs/AWS_DEPLOYMENT.md)
+- 💰 [Cost Analysis](docs/AWS_COST_ANALYSIS.md)
+- 🚀 [Quick Start](docs/DEPLOYMENT_QUICKSTART.md)
 
 ## 📊 Data Sources
 
