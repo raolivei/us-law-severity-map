@@ -37,10 +37,10 @@ export default function InteractiveMap() {
     map.current.on("load", () => {
       setIsLoading(false);
 
-      // Add US states layer
+      // Add US states layer (using local GeoJSON to avoid 403 errors)
       map.current?.addSource("states", {
         type: "geojson",
-        data: "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json",
+        data: "/us-states.json",
       });
 
       // Add fill layer with severity colors
@@ -143,12 +143,15 @@ export default function InteractiveMap() {
           const feature = e.features[0];
           const stateName = feature.properties?.name;
 
+          console.log("Clicked state:", stateName); // Debug log
+
           // Find state data
           const stateData = Object.values(STATES_DATA).find(
             (s) => s.name === stateName
           );
 
           if (stateData) {
+            console.log("State data found:", stateData); // Debug log
             setSelectedState(stateData);
 
             // Smooth fly to state
@@ -163,6 +166,10 @@ export default function InteractiveMap() {
                   ? 4 * t * t * t
                   : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
             });
+          } else {
+            // Show alert for states without data
+            console.warn("No data available for:", stateName); // Debug log
+            alert(`📊 ${stateName}\n\nData not yet available for this state.\n\nCurrently showing data for: TX, CA, NY, FL, HI, LA, VT, MA, WA, IL\n\nMore states coming soon!`);
           }
         }
       });
@@ -226,47 +233,58 @@ export default function InteractiveMap() {
         </div>
       </motion.div>
 
-      {/* Legend */}
+      {/* Legend - Enhanced visibility */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         className="absolute top-6 right-6 z-10"
       >
-        <div className="backdrop-blur-xl bg-white/10 rounded-2xl px-4 py-3 shadow-2xl border border-white/20">
-          <h3 className="text-white font-semibold mb-2 text-sm">
-            Severity Scale
+        <div className="backdrop-blur-2xl bg-white/20 rounded-2xl px-5 py-4 shadow-2xl border-2 border-white/30">
+          <h3 className="text-white font-bold mb-3 text-base">
+            📊 Severity Scale
           </h3>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
               <div
-                className="w-4 h-4 rounded"
+                className="w-6 h-6 rounded-md shadow-lg border border-white/20"
                 style={{ backgroundColor: getSeverityColor(100) }}
               />
-              <span className="text-white/80 text-xs">
+              <span className="text-white font-medium text-sm">
                 Very Severe (95-100)
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <div
-                className="w-4 h-4 rounded"
+                className="w-6 h-6 rounded-md shadow-lg border border-white/20"
                 style={{ backgroundColor: getSeverityColor(75) }}
               />
-              <span className="text-white/80 text-xs">Severe (65-94)</span>
+              <span className="text-white font-medium text-sm">Severe (65-94)</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <div
-                className="w-4 h-4 rounded"
+                className="w-6 h-6 rounded-md shadow-lg border border-white/20"
                 style={{ backgroundColor: getSeverityColor(50) }}
               />
-              <span className="text-white/80 text-xs">Moderate (40-64)</span>
+              <span className="text-white font-medium text-sm">Moderate (40-64)</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <div
-                className="w-4 h-4 rounded"
+                className="w-6 h-6 rounded-md shadow-lg border border-white/20"
                 style={{ backgroundColor: getSeverityColor(25) }}
               />
-              <span className="text-white/80 text-xs">Lenient (20-39)</span>
+              <span className="text-white font-medium text-sm">Lenient (20-39)</span>
             </div>
+            <div className="flex items-center gap-3">
+              <div
+                className="w-6 h-6 rounded-md shadow-lg border border-white/20 bg-gray-600"
+              />
+              <span className="text-white/70 font-medium text-sm italic">No data available</span>
+            </div>
+          </div>
+          <div className="mt-3 pt-3 border-t border-white/20">
+            <p className="text-white/60 text-xs">
+              💡 Click any state for details
+            </p>
           </div>
         </div>
       </motion.div>
