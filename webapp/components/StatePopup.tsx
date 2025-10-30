@@ -7,7 +7,7 @@ import {
   getComparisonColor,
   getSeverityColor,
 } from "@/lib/utils";
-import { Scale, Skull, Gun, Car, Users, Building2 } from "lucide-react";
+import { Scale, Skull, Zap, Car, Users, Building2 } from "lucide-react";
 
 interface StatePopupProps {
   state: StateData;
@@ -105,7 +105,7 @@ export default function StatePopup({ state, onClose }: StatePopupProps) {
                 delay={0.3}
               />
               <StatRow
-                icon={<Gun className="w-4 h-4" />}
+                icon={<Zap className="w-4 h-4" />}
                 label="Gun Deaths"
                 value={state.gunDeathRate}
                 average={US_AVERAGES.gun}

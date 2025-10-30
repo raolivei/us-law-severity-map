@@ -10,31 +10,33 @@ Located in: `/webapp/`
 
 ## 🆚 Python vs React Comparison
 
-| Feature | Python Version | React Version |
-|---------|---------------|---------------|
-| **Technology** | Python + Plotly | Next.js + Mapbox GL |
-| **Rendering** | Server-side HTML | Client-side WebGL |
-| **Performance** | Good | **Excellent** ⭐ |
-| **Animations** | Basic | **Smooth & Custom** ⭐ |
-| **UI Design** | Standard | **Modern Glassmorphism** ⭐ |
-| **Interactivity** | Click + Zoom | **Advanced Interactions** ⭐ |
-| **Load Time** | ~2-3s | **< 1s** ⭐ |
-| **File Size** | ~500KB HTML | ~200KB (gzipped) |
-| **Mobile** | Responsive | **Optimized** ⭐ |
-| **Development** | Static generation | **Hot reload** ⭐ |
-| **Customization** | Limited | **Fully customizable** ⭐ |
-| **SEO** | Good | **Excellent** (SSR) ⭐ |
+| Feature           | Python Version    | React Version                |
+| ----------------- | ----------------- | ---------------------------- |
+| **Technology**    | Python + Plotly   | Next.js + Mapbox GL          |
+| **Rendering**     | Server-side HTML  | Client-side WebGL            |
+| **Performance**   | Good              | **Excellent** ⭐             |
+| **Animations**    | Basic             | **Smooth & Custom** ⭐       |
+| **UI Design**     | Standard          | **Modern Glassmorphism** ⭐  |
+| **Interactivity** | Click + Zoom      | **Advanced Interactions** ⭐ |
+| **Load Time**     | ~2-3s             | **< 1s** ⭐                  |
+| **File Size**     | ~500KB HTML       | ~200KB (gzipped)             |
+| **Mobile**        | Responsive        | **Optimized** ⭐             |
+| **Development**   | Static generation | **Hot reload** ⭐            |
+| **Customization** | Limited           | **Fully customizable** ⭐    |
+| **SEO**           | Good              | **Excellent** (SSR) ⭐       |
 
 ---
 
 ## 🚀 Tech Stack
 
 ### Core Framework
+
 - **Next.js 14** - React framework with App Router
 - **React 18** - UI library with latest features
 - **TypeScript** - Type-safe development
 
 ### Mapping & Visualization
+
 - **Mapbox GL JS** - WebGL-powered interactive maps
   - Hardware acceleration
   - Smooth 60fps animations
@@ -42,6 +44,7 @@ Located in: `/webapp/`
   - Custom easing functions
 
 ### UI & Animations
+
 - **Framer Motion** - Production-ready animations
   - Spring physics
   - Gesture recognition
@@ -51,6 +54,7 @@ Located in: `/webapp/`
 - **Lucide React** - Modern icon set
 
 ### Build & Dev Tools
+
 - **Turbopack** - Fast bundler (Next.js 14)
 - **ESLint** - Code linting
 - **PostCSS** - CSS processing
@@ -62,19 +66,20 @@ Located in: `/webapp/`
 ### 1. **Advanced Animations**
 
 **Custom Easing:**
+
 ```typescript
 // Smooth zoom with custom cubic bezier easing
 map.flyTo({
   center: [lng, lat],
   zoom: 7,
   duration: 2000,
-  easing: (t) => t < 0.5 
-    ? 4 * t * t * t 
-    : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1
-})
+  easing: (t) =>
+    t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
+});
 ```
 
 **Framer Motion:**
+
 ```typescript
 // Popup with spring physics
 <motion.div
@@ -87,12 +92,14 @@ map.flyTo({
 ### 2. **Glassmorphism Design**
 
 **Modern UI with backdrop blur:**
+
 - Frosted glass effect
 - Transparent overlays
 - Gradient backgrounds
 - Subtle borders
 
 **CSS Implementation:**
+
 ```css
 .glass {
   backdrop-blur: 2rem;
@@ -112,22 +119,25 @@ map.flyTo({
 ### 4. **Performance Optimizations**
 
 **WebGL Rendering:**
+
 - Hardware-accelerated graphics
 - 60fps smooth animations
 - Efficient state management
 
 **Code Splitting:**
+
 - Dynamic imports for heavy components
 - Lazy loading for better initial load
 - Tree-shaking for smaller bundles
 
 **React Optimization:**
+
 ```typescript
 // Dynamic import to avoid SSR issues
-const InteractiveMap = dynamic(() => import('@/components/InteractiveMap'), {
+const InteractiveMap = dynamic(() => import("@/components/InteractiveMap"), {
   ssr: false,
-  loading: () => <LoadingSpinner />
-})
+  loading: () => <LoadingSpinner />,
+});
 ```
 
 ---
@@ -191,6 +201,7 @@ webapp/
 ### Color Palette
 
 **Severity Colors:**
+
 ```typescript
 100: '#8B0000' // Very Severe (Dark Red)
  95: '#DC143C' // Crimson
@@ -207,7 +218,7 @@ webapp/
 
 - **Font**: Inter (Variable font)
 - **Weights**: 400 (Regular), 600 (Semibold), 700 (Bold)
-- **Sizes**: 
+- **Sizes**:
   - Title: 3xl (30px)
   - Heading: xl-2xl (20-24px)
   - Body: sm-base (14-16px)
@@ -292,6 +303,7 @@ WY: {
 ### Framer Motion Patterns
 
 **Fade In:**
+
 ```typescript
 <motion.div
   initial={{ opacity: 0 }}
@@ -301,6 +313,7 @@ WY: {
 ```
 
 **Slide In:**
+
 ```typescript
 <motion.div
   initial={{ opacity: 0, y: 20 }}
@@ -310,6 +323,7 @@ WY: {
 ```
 
 **Scale:**
+
 ```typescript
 <motion.button
   whileHover={{ scale: 1.05 }}
@@ -318,6 +332,7 @@ WY: {
 ```
 
 **Spring Physics:**
+
 ```typescript
 <motion.div
   initial={{ scale: 0 }}
@@ -329,24 +344,26 @@ WY: {
 ### Mapbox Animations
 
 **Fly To:**
+
 ```typescript
 map.flyTo({
   center: [lng, lat],
   zoom: 7,
   duration: 2000,
   curve: 1.42, // Flight path curve
-  easing: customEasingFunction
-})
+  easing: customEasingFunction,
+});
 ```
 
 **Ease To:**
+
 ```typescript
 map.easeTo({
   center: [lng, lat],
   zoom: 7,
   duration: 1000,
-  easing: (t) => t // Linear
-})
+  easing: (t) => t, // Linear
+});
 ```
 
 ---
@@ -429,12 +446,14 @@ CMD ["npm", "start"]
 ## 🎯 Roadmap
 
 ### Phase 1: Complete Data ✅
+
 - [x] 10 states implemented
 - [ ] Add remaining 40 states
 - [ ] Verify all statistics
 - [ ] Add historical data
 
 ### Phase 2: Enhanced Features
+
 - [ ] Search functionality
 - [ ] State comparison mode
 - [ ] Dark/light mode toggle
@@ -442,6 +461,7 @@ CMD ["npm", "start"]
 - [ ] Keyboard navigation
 
 ### Phase 3: Advanced Visualization
+
 - [ ] 3D terrain view
 - [ ] Heat maps
 - [ ] Time-series animation
@@ -449,6 +469,7 @@ CMD ["npm", "start"]
 - [ ] Custom color schemes
 
 ### Phase 4: Interactivity
+
 - [ ] Share functionality
 - [ ] Bookmark states
 - [ ] Export data (CSV/JSON)
@@ -481,4 +502,3 @@ CMD ["npm", "start"]
 **Version**: 1.0.0  
 **Status**: Production Ready (needs complete state data)  
 **License**: MIT
-
