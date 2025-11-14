@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: us-law-severity-map-web
+  namespace: us-law-severity-map
+  labels:
+    app: us-law-severity-map
+    component: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: us-law-severity-map
+      component: web
+  template:
+    metadata:
+      labels:
+        app: us-law-severity-map
+        component: web
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: web
+          image: ghcr.io/raolivei/us-law-severity-map-web:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: NEXT_PUBLIC_MAPBOX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: us-law-severity-map-secrets
+                  key: MAPBOX_TOKEN
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5

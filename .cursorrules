@@ -1,0 +1,167 @@
+# US Law Severity Map - Cursor Rules
+
+## Project Overview
+
+Interactive choropleth map showing US law severity scores and crime statistics. Python-based data visualization project with AWS deployment.
+
+## Project Structure
+
+- `main.py` - Main visualization script (standalone Python script)
+- `requirements.txt` - Python dependencies
+- `k8s/` - Kubernetes manifests for deployment
+- `terraform/` - AWS infrastructure (S3 + CloudFront)
+- `docs/` - Documentation
+- `data/` - Auto-generated shapefiles (gitignored)
+
+## Code Conventions
+
+### Python Style
+
+- Follow PEP 8
+- Use type hints where appropriate
+- Docstrings for functions (Google style)
+- Use `pathlib.Path` for file paths
+- Use f-strings for string formatting
+
+### File Organization
+
+- Single main script (`main.py`) for simplicity
+- Keep data processing functions modular
+- Separate data sources into dictionaries/functions
+
+### Kubernetes Manifests
+
+- **Use Helm charts where applicable** - Prefer Helm charts over raw YAML manifests when suitable charts exist
+- Namespace: `us-law-severity-map`
+- Resource naming: `us-law-severity-map-<component>`
+- Use semantic versioning for image tags
+- Include resource limits and health checks
+
+### Docker Images & GitHub Container Registry (GHCR)
+
+- **Image Location**: `ghcr.io/raolivei/us-law-severity-map-web:<tag>`
+- **Image Tagging**: GitHub Actions automatically creates multiple tags per push:
+  - Push to `main`: Creates `main`, `latest`, `sha-<commit-hash>` tags
+  - Push to `dev`: Creates `dev`, `sha-<commit-hash>` tags
+  - Push git tag (e.g., `v1.0.1`): Creates `v1.0.1`, `1.0`, `sha-<commit-hash>` tags
+- **When Images Are Pushed**: Only on pushes to `main`/`dev` branches or git tag pushes. PR builds test but don't push images.
+- **Viewing Images**: Check https://github.com/users/raolivei/packages/container/package/us-law-severity-map-web
+- **Testing Images Locally**: Use `./scripts/test-docker-build.sh` to build and test before pushing
+- **Deployment**: Use `latest` tag for automatic updates, or specific version tags (e.g., `v1.0.1`) for production stability
+
+### Git Workflow
+
+- Use conventional commits: `feat:`, `fix:`, `docs:`, `chore:`
+- Feature branches: `feature/<name>`
+- Infrastructure changes: `infra/<name>`
+- **Version Consistency**: Git tag versions must match Docker image tag versions. When creating a release, ensure the git tag (e.g., `v1.2.3`) matches the Docker image tag used in deployment manifests
+- **Image Changes**: Any changes to Docker images (Dockerfile, base images, image tags, etc.) must always update the CHANGELOG.md file
+
+## Common Tasks
+
+### Adding New Statistics
+
+1. Add data to `get_state_statistics()` function
+2. Update statistics panel HTML template
+3. Update README with new metric
+
+### Updating Kubernetes Deployment
+
+1. **Use Helm charts where applicable** - Prefer Helm charts for deployments
+2. Update image tag in `k8s/deploy.yaml` (or Helm chart values if using Helm)
+3. Test locally: `kubectl apply -f k8s/ --dry-run=client` or `helm template` for Helm charts
+4. Commit with `infra(k8s):` prefix
+
+### AWS Deployment
+
+- Use Terraform for infrastructure changes
+- Follow manual workflow (PR → Plan → Manual Apply)
+- See `docs/MANUAL_TERRAFORM_WORKFLOW.md`
+
+## Development Workflow
+
+1. Make changes to `main.py`
+2. Test locally: `python main.py`
+3. Verify HTML output opens correctly
+4. Commit changes
+5. For k8s: update manifests and test with dry-run
+
+## Key Dependencies
+
+- `geopandas` - Geographic data manipulation
+- `plotly` - Interactive visualizations
+- `requests` - HTTP downloads
+
+## Port Conflict Prevention
+
+### Best Practices
+
+- **Always check for port conflicts** before starting Docker containers or local dev servers
+- **Use port detection functions** in test scripts to automatically find available ports
+- **Document default ports** used by each application/service
+- **Check running processes** before assuming a port is available
+
+### Port Conflict Detection
+
+When creating scripts that start services (Docker containers, dev servers, etc.):
+
+1. **Check if port is in use** before binding:
+
+   ```bash
+   port_in_use() {
+       local port=$1
+       lsof -Pi :${port} -sTCP:LISTEN -t >/dev/null 2>&1
+   }
+   ```
+
+2. **Find available port** if default is taken:
+
+   ```bash
+   find_available_port() {
+       local port=$1
+       local max_port=$((port + 10))
+       while [ $port -le $max_port ]; do
+           if ! port_in_use $port; then
+               echo $port
+               return 0
+           fi
+           port=$((port + 1))
+       done
+       return 1
+   }
+   ```
+
+3. **Show what's using the port** if conflict detected:
+
+   ```bash
+   if port_in_use $PORT; then
+       echo "Port ${PORT} is in use by:"
+       lsof -Pi :${PORT} -sTCP:LISTEN
+   fi
+   ```
+
+4. **Use environment variables** to allow port override:
+   ```bash
+   PORT=${PORT:-3000}  # Default to 3000, allow override
+   ```
+
+### Common Ports Used
+
+- `3000` - Next.js/React dev servers, Docker test containers
+- `3001` - Alternative dev server port
+- `5000` - macOS AirPlay Receiver (avoid if possible)
+- `8000` - Python/FastAPI servers
+- `5173` - Vite dev server
+- `8080` - Alternative web server port
+
+### Docker Port Mapping
+
+- Always check host port availability before `docker run -p HOST:CONTAINER`
+- Use dynamic port finding in test scripts
+- Document which ports are used in README/docs
+
+## Notes
+
+- Shapefiles are cached in `data/` directory
+- Output HTML is standalone (includes all JS/CSS)
+- Map uses Plotly.js CDN for interactivity

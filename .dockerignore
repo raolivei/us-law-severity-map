@@ -1,0 +1,64 @@
+# Git
+.git
+.gitignore
+.github/
+
+# Documentation
+*.md
+docs/
+
+# Development
+.vscode
+.idea
+*.swp
+*.swo
+
+# Python (if any)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+venv/
+.venv/
+*.egg-info/
+us-law-severity-map/
+
+# Node
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store
+
+# Testing
+test-results/
+coverage/
+
+# Data files (large shapefiles)
+data/*.shp
+data/*.dbf
+data/*.shx
+data/*.prj
+data/*.cpg
+data/*.xml
+
+# Build artifacts
+*.html
+*.tar.gz
+
+# Kubernetes (not needed in image)
+k8s/
+terraform/
+
+# Scripts (not needed in image)
+scripts/
+
