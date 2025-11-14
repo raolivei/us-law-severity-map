@@ -1,9 +1,11 @@
 # US Law Severity Map - Cursor Rules
 
 ## Project Overview
+
 Interactive choropleth map showing US law severity scores and crime statistics. Python-based data visualization project with AWS deployment.
 
 ## Project Structure
+
 - `main.py` - Main visualization script (standalone Python script)
 - `requirements.txt` - Python dependencies
 - `k8s/` - Kubernetes manifests for deployment
@@ -14,6 +16,7 @@ Interactive choropleth map showing US law severity scores and crime statistics. 
 ## Code Conventions
 
 ### Python Style
+
 - Follow PEP 8
 - Use type hints where appropriate
 - Docstrings for functions (Google style)
@@ -21,39 +24,49 @@ Interactive choropleth map showing US law severity scores and crime statistics. 
 - Use f-strings for string formatting
 
 ### File Organization
+
 - Single main script (`main.py`) for simplicity
 - Keep data processing functions modular
 - Separate data sources into dictionaries/functions
 
 ### Kubernetes Manifests
+
+- **Use Helm charts where applicable** - Prefer Helm charts over raw YAML manifests when suitable charts exist
 - Namespace: `us-law-severity-map`
 - Resource naming: `us-law-severity-map-<component>`
 - Use semantic versioning for image tags
 - Include resource limits and health checks
 
 ### Git Workflow
+
 - Use conventional commits: `feat:`, `fix:`, `docs:`, `chore:`
 - Feature branches: `feature/<name>`
 - Infrastructure changes: `infra/<name>`
+- **Version Consistency**: Git tag versions must match Docker image tag versions. When creating a release, ensure the git tag (e.g., `v1.2.3`) matches the Docker image tag used in deployment manifests
 
 ## Common Tasks
 
 ### Adding New Statistics
+
 1. Add data to `get_state_statistics()` function
 2. Update statistics panel HTML template
 3. Update README with new metric
 
 ### Updating Kubernetes Deployment
-1. Update image tag in `k8s/deploy.yaml`
-2. Test locally: `kubectl apply -f k8s/ --dry-run=client`
-3. Commit with `infra(k8s):` prefix
+
+1. **Use Helm charts where applicable** - Prefer Helm charts for deployments
+2. Update image tag in `k8s/deploy.yaml` (or Helm chart values if using Helm)
+3. Test locally: `kubectl apply -f k8s/ --dry-run=client` or `helm template` for Helm charts
+4. Commit with `infra(k8s):` prefix
 
 ### AWS Deployment
+
 - Use Terraform for infrastructure changes
 - Follow manual workflow (PR → Plan → Manual Apply)
 - See `docs/MANUAL_TERRAFORM_WORKFLOW.md`
 
 ## Development Workflow
+
 1. Make changes to `main.py`
 2. Test locally: `python main.py`
 3. Verify HTML output opens correctly
@@ -61,12 +74,13 @@ Interactive choropleth map showing US law severity scores and crime statistics. 
 5. For k8s: update manifests and test with dry-run
 
 ## Key Dependencies
+
 - `geopandas` - Geographic data manipulation
 - `plotly` - Interactive visualizations
 - `requests` - HTTP downloads
 
 ## Notes
+
 - Shapefiles are cached in `data/` directory
 - Output HTML is standalone (includes all JS/CSS)
 - Map uses Plotly.js CDN for interactivity
-
