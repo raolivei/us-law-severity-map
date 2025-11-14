@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: us-law-severity-map-web
+  namespace: us-law-severity-map
+  labels:
+    app: us-law-severity-map
+    component: web
+spec:
+  type: ClusterIP
+  selector:
+    app: us-law-severity-map
+    component: web
+  ports:
+    - port: 3000
+      targetPort: 3000
+      name: http
+
