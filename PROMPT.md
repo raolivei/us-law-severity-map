@@ -98,11 +98,13 @@ PROJECT SPECIFICATIONS:
 
    **Option B: Kubernetes Deployment (Raspberry Pi k3s)**
    
-   Kubernetes manifests in `/k8s` directory:
-   - `namespace.yaml` - Namespace definition
-   - `deploy.yaml` - Next.js webapp deployment (2 replicas)
-   - `service.yaml` - ClusterIP service
-   - `ingress.yaml` - Ingress configuration for external access
+   **Use Helm charts where applicable** - Prefer Helm charts for deployments when suitable charts exist. When Helm charts are not available or not suitable, use raw YAML manifests:
+   - Kubernetes manifests in `/k8s` directory:
+     - `namespace.yaml` - Namespace definition
+     - `deploy.yaml` - Next.js webapp deployment (2 replicas)
+     - `service.yaml` - ClusterIP service
+     - `ingress.yaml` - Ingress configuration for external access
+   - Or Helm charts in `/helm` directory if using Helm
    
    **Vault Secrets Management:**
    - ALL secrets managed through Vault
@@ -313,6 +315,7 @@ Data Embedding:
  - Outputs: bucket name, website endpoint, CloudFront domain
 
 13. KUBERNETES DEPLOYMENT (Pi Cluster):
+ - **Use Helm charts where applicable** - Prefer Helm charts for deployments when suitable charts exist
  - Namespace: us-law-severity-map
  - Deployment: 2 replicas of Next.js webapp
  - Service: ClusterIP on port 3000
