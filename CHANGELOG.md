@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2025-01-XX
+
+### Added
+- Kubernetes deployment manifests (deploy.yaml, service.yaml, ingress.yaml, namespace.yaml)
+- Dockerfile for containerized deployment
+- Project conventions documentation (.cursorrules)
+
+### Fixed
+- Major UX issues identified in user testing
+- React app errors and functionality improvements
+- Added local US states GeoJSON to avoid 403 errors
+
+### Changed
+- Removed Tailwind @apply directives - use pure CSS
+- Updated PROMPT.md with project documentation
+
 ## [3.0.0] - 2025-10-29
 
 ### Added - AWS Deployment & Infrastructure

@@ -68,8 +68,10 @@ PROJECT SPECIFICATIONS:
    - Smooth slide-in animation
    - Clean, professional design
 
-5. AWS DEPLOYMENT INFRASTRUCTURE:
+5. DEPLOYMENT OPTIONS:
 
+   **Option A: AWS Deployment (S3 + CloudFront)**
+   
    Terraform (Infrastructure as Code):
    - S3 bucket for static website hosting
    - CloudFront CDN distribution with caching
@@ -93,6 +95,67 @@ PROJECT SPECIFICATIONS:
    - Enable compression
    - Proper cache headers
    - S3 lifecycle policies
+
+   **Option B: Kubernetes Deployment (Raspberry Pi k3s)**
+   
+   Kubernetes manifests in `/k8s` directory:
+   - `namespace.yaml` - Namespace definition
+   - `deploy.yaml` - Next.js webapp deployment (2 replicas)
+   - `service.yaml` - ClusterIP service
+   - `ingress.yaml` - Ingress configuration for external access
+   
+   **Vault Secrets Management:**
+   - ALL secrets managed through Vault
+   - External Secrets Operator syncs automatically
+   - Secret path: `secret/us-law-severity-map/mapbox` (Mapbox token)
+   
+   **Setting Mapbox Token in Vault:**
+   ```bash
+   VAULT_POD=$(kubectl get pods -n vault -l app.kubernetes.io/name=vault -o jsonpath='{.items[0].metadata.name}')
+   kubectl exec -n vault $VAULT_POD -- sh -c "export VAULT_ADDR=http://127.0.0.1:8200 && export VAULT_TOKEN=root && vault kv put secret/us-law-severity-map/mapbox token=YOUR_MAPBOX_TOKEN"
+   ```
+   
+   **ExternalSecret Resource:**
+   ```yaml
+   # Located at: pi-fleet/clusters/eldertree/infrastructure/external-secrets/externalsecrets/us-law-severity-map-secrets.yaml
+   apiVersion: external-secrets.io/v1beta1
+   kind: ExternalSecret
+   metadata:
+     name: us-law-severity-map-secrets
+     namespace: us-law-severity-map
+   spec:
+     refreshInterval: 24h
+     secretStoreRef:
+       name: vault
+       kind: ClusterSecretStore
+     target:
+       name: us-law-severity-map-secrets
+       creationPolicy: Owner
+     data:
+       - secretKey: MAPBOX_TOKEN
+         remoteRef:
+           key: secret/us-law-severity-map/mapbox
+           property: token
+   ```
+   
+   **Deployment Steps:**
+   ```bash
+   export KUBECONFIG=~/.kube/config-eldertree
+   kubectl apply -f k8s/namespace.yaml
+   kubectl apply -f k8s/deploy.yaml
+   kubectl apply -f k8s/service.yaml
+   kubectl apply -f k8s/ingress.yaml
+   ```
+   
+   **Environment Variables:**
+   - `NODE_ENV=production`
+   - `NEXT_PUBLIC_MAPBOX_TOKEN` - From Vault secret (us-law-severity-map-secrets)
+   
+   **Security Best Practices:**
+   - ✅ All secrets in Vault (single source of truth)
+   - ✅ External Secrets Operator (automatic sync every 24 hours)
+   - ✅ No hardcoded secrets in deployment files
+   - ✅ Mapbox token retrieved from Vault secret
 
 6. DOCUMENTATION REQUIRED:
 
@@ -150,7 +213,18 @@ us-law-severity-map/
 ├── PROMPT.md # This file
 ├── LICENSE # MIT License
 ├── .gitignore # Git ignore rules
+├── Dockerfile # Multi-stage build for Next.js app
 ├── data/ # Auto-downloaded shapefiles
+├── webapp/ # Next.js frontend application
+│ ├── components/ # React components
+│ ├── data/ # State data
+│ ├── lib/ # Utilities
+│ └── package.json # Frontend dependencies
+├── k8s/ # Kubernetes manifests (for Pi cluster deployment)
+│ ├── namespace.yaml
+│ ├── deploy.yaml
+│ ├── service.yaml
+│ └── ingress.yaml
 ├── docs/ # Documentation
 │ ├── AWS_DEPLOYMENT.md
 │ ├── AWS_COST_ANALYSIS.md
@@ -226,7 +300,7 @@ Data Embedding:
  - Invalidate CloudFront cache
  - Use proper AWS CLI commands
 
-12. TERRAFORM CONFIGURATION:
+12. TERRAFORM CONFIGURATION (AWS):
  - Provider: AWS (~> 5.0)
  - S3 bucket with website configuration
  - Public access block settings
@@ -238,7 +312,17 @@ Data Embedding:
  - Compression enabled
  - Outputs: bucket name, website endpoint, CloudFront domain
 
-13. QUALITY REQUIREMENTS:
+13. KUBERNETES DEPLOYMENT (Pi Cluster):
+ - Namespace: us-law-severity-map
+ - Deployment: 2 replicas of Next.js webapp
+ - Service: ClusterIP on port 3000
+ - Ingress: Traefik with cert-manager TLS
+ - Secrets: Managed via Vault + External Secrets Operator
+ - Image: ghcr.io/raolivei/us-law-severity-map-web:v1.0.0
+ - Environment: NODE_ENV=production, NEXT_PUBLIC_MAPBOX_TOKEN from Vault
+ - Resources: 256Mi RAM, 200m CPU (limits: 512Mi, 500m)
+
+14. QUALITY REQUIREMENTS:
  - Professional code with comments
  - Type hints where appropriate
  - Error handling for shapefile download
