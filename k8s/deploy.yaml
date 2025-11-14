@@ -19,10 +19,12 @@ spec:
         app: us-law-severity-map
         component: web
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: web
-          image: ghcr.io/raolivei/us-law-severity-map-web:v1.0.0
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/raolivei/us-law-severity-map-web:v1.0.1
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
               name: http
