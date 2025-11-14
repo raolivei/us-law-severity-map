@@ -30,7 +30,7 @@ jobs:
                   fi
 
             - name: Checkout code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v2
@@ -76,7 +76,7 @@ jobs:
 
             - name: Upload Destroy Log
               if: always()
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: terraform-destroy-log
                   path: terraform/s3-cloudfront/destroy.log

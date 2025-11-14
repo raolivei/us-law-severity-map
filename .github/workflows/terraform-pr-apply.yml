@@ -52,7 +52,7 @@ jobs:
                       }
 
             - name: Checkout PR branch
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   ref: refs/pull/${{ github.event.inputs.pr_number }}/head
 
@@ -273,7 +273,7 @@ jobs:
 
             - name: Upload Apply Log
               if: always()
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: terraform-apply-log-pr-${{ github.event.inputs.pr_number }}
                   path: terraform/s3-cloudfront/apply.log
