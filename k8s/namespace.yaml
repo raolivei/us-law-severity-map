@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: us-law-severity-map
+  labels:
+    name: us-law-severity-map
+    app: us-law-severity-map
+
