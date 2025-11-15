@@ -32,12 +32,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Extract version from package.json
+      - name: Extract version
         id: package-version
         run: |
-          VERSION=$(cat webapp/package.json | grep '"version"' | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+          VERSION=$(cat VERSION | tr -d '[:space:]')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Version: $VERSION"
+          echo "Version: v$VERSION"
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
