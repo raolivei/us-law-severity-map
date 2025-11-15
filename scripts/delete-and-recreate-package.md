@@ -5,6 +5,7 @@ This is the **nuclear option** to fix the persistent 403 Forbidden error with th
 ## Why This Might Be Necessary
 
 Even after:
+
 - ✅ Fixing repository workflow permissions
 - ✅ Linking the package to the repository
 - ✅ Re-running the workflow multiple times
@@ -86,6 +87,7 @@ gh workflow run build-and-push.yml \
 ```
 
 Or via GitHub UI:
+
 1. Go to: Actions → "Build and Push Docker Image"
 2. Click "Run workflow"
 3. Select branch: `main` or `dev`
@@ -115,6 +117,7 @@ push: ${{ github.event_name != 'pull_request' }}
 ```
 
 This means:
+
 - ✅ **Push to registry**: When commits are pushed to `main` or `dev`
 - ❌ **Don't push to registry**: When running on pull requests (just build to verify)
 
@@ -138,4 +141,3 @@ But this is generally not recommended unless you have a specific need for PR-tag
 
 **Last Updated**: November 15, 2024  
 **Status**: Ready to execute
-
