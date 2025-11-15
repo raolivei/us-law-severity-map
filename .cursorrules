@@ -16,6 +16,8 @@ When starting services locally, always use the assigned ports from `workspace-co
 
 Interactive choropleth map showing US law severity scores and crime statistics. Python-based data visualization project with AWS deployment.
 
+**CLUSTER**: Deployed on the **`eldertree`** Raspberry Pi k3s cluster (when enabled).
+
 ## Project Structure
 
 - `main.py` - Main visualization script (standalone Python script)
