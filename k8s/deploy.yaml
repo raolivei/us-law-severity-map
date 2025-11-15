@@ -8,7 +8,11 @@ metadata:
     app: us-law-severity-map
     component: web
 spec:
+<<<<<<< HEAD
   replicas: 1
+=======
+  replicas: 2
+>>>>>>> origin/main
   selector:
     matchLabels:
       app: us-law-severity-map
@@ -23,7 +27,11 @@ spec:
         - name: ghcr-secret
       containers:
         - name: web
+<<<<<<< HEAD
           image: ghcr.io/raolivei/us-law-severity-map-web:latest
+=======
+          image: ghcr.io/raolivei/us-law-severity-map-web:v1.0.1
+>>>>>>> origin/main
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
@@ -55,3 +63,7 @@ spec:
               port: 3000
             initialDelaySeconds: 10
             periodSeconds: 5
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
