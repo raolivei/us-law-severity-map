@@ -2,7 +2,6 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-<<<<<<< HEAD
 # Install build dependencies for native modules (mapbox-gl, etc.)
 RUN apk add --no-cache \
     python3 \
@@ -40,17 +39,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build the Next.js application with increased memory limit and verbose output
 RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build 2>&1 | tee /tmp/build.log || (cat /tmp/build.log && exit 1)
-=======
-# Copy package files
-COPY webapp/package*.json ./
-RUN npm install --legacy-peer-deps
-
-# Copy source code
-COPY webapp/ .
-
-# Build the Next.js application
-RUN npm run build
->>>>>>> origin/main
 
 # Production stage
 FROM node:20-alpine AS runner
