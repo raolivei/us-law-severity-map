@@ -5,6 +5,30 @@ metadata:
   name: us-law-severity-map
   namespace: us-law-severity-map
   annotations:
+<<<<<<< HEAD
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
+  labels:
+    app: us-law-severity-map
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - us-law-severity-map.eldertree.local
+      secretName: us-law-severity-map-tls
+  rules:
+    - host: us-law-severity-map.eldertree.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: us-law-severity-map-web
+                port:
+                  number: 3000
+=======
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
   labels:
@@ -26,3 +50,4 @@ spec:
             port:
               number: 3000
 
+>>>>>>> origin/main

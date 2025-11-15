@@ -2,6 +2,45 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+<<<<<<< HEAD
+# Install build dependencies for native modules (mapbox-gl, etc.)
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    libc6-compat
+
+# Update npm to latest version
+RUN npm install -g npm@latest
+
+# Copy package files
+COPY webapp/package.json ./
+COPY webapp/package-lock.json* ./
+
+# Install dependencies - use npm install directly with legacy-peer-deps
+# This handles React 19 + Next.js 16 compatibility issues
+# If lockfile causes issues, remove it and reinstall
+RUN npm install --legacy-peer-deps || \
+    (rm -f package-lock.json && npm install --legacy-peer-deps)
+
+# Copy source code and config files
+COPY webapp/ .
+
+# Ensure all config files are present
+RUN ls -la && \
+    echo "=== Checking config files ===" && \
+    [ -f next.config.ts ] && echo "✓ next.config.ts" || echo "✗ next.config.ts missing" && \
+    [ -f tsconfig.json ] && echo "✓ tsconfig.json" || echo "✗ tsconfig.json missing" && \
+    [ -f postcss.config.mjs ] && echo "✓ postcss.config.mjs" || echo "✗ postcss.config.mjs missing" && \
+    [ -f package.json ] && echo "✓ package.json" || echo "✗ package.json missing"
+
+# Set build environment
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build the Next.js application with increased memory limit and verbose output
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build 2>&1 | tee /tmp/build.log || (cat /tmp/build.log && exit 1)
+=======
 # Copy package files
 COPY webapp/package*.json ./
 RUN npm install --legacy-peer-deps
@@ -11,6 +50,7 @@ COPY webapp/ .
 
 # Build the Next.js application
 RUN npm run build
+>>>>>>> origin/main
 
 # Production stage
 FROM node:20-alpine AS runner
