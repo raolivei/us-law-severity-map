@@ -110,9 +110,11 @@ docker-compose up -d
 ```
 
 **Access:**
+
 - Web: http://localhost:3000
 
 **Benefits:**
+
 - Consistent environment (matches production)
 - Hot reload enabled via volume mounts
 - No local Node version conflicts
