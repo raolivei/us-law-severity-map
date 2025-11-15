@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.1.0] - 2025-01-XX
+## Versioning
+
+**Current Status**: Pre-release (0.x.x versions)
+
+- **0.x.x**: Development versions - features are being refined  
+- **1.0.0**: First stable release - will be tagged when ready for production use
+
+## [0.5.0] - 2025-01-XX
 
 ### Added
 - Kubernetes deployment manifests (deploy.yaml, service.yaml, ingress.yaml, namespace.yaml)
@@ -18,7 +25,7 @@ All notable changes to this project will be documented in this file.
 - Removed Tailwind @apply directives - use pure CSS
 - Updated PROMPT.md with project documentation
 
-## [3.0.0] - 2025-10-29
+## [0.4.0] - 2025-10-29
 
 ### Added - AWS Deployment & Infrastructure
 
@@ -49,7 +56,7 @@ All notable changes to this project will be documented in this file.
 - Complete audit trail of all infrastructure changes
 - Terraform state locking prevents concurrent modifications
 
-## [2.0.0] - 2025-10-29
+## [0.3.0] - 2025-10-29
 
 ### Added - Interactive Visualization
 
@@ -76,7 +83,7 @@ All notable changes to this project will be documented in this file.
 - Event handling for click interactions
 - Map centering when zooming to states
 
-## [1.0.0] - 2025-10-28
+## [0.1.0] - 2025-10-28
 
 ### Added
 
