@@ -476,3 +476,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Disclaimer:** This map represents a simplified view of highly complex legal and social systems. The data is provided for educational and informational purposes. For authoritative legal information, always consult official state resources or qualified legal professionals.
 
 **Made with ❤️ and Python** | Data-driven insights into the US criminal justice system
+
