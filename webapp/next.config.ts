@@ -1,10 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-<<<<<<< HEAD
-  // Production optimizations
-  reactStrictMode: true,
-=======
   // Disable the built-in dev overlay in production
   devIndicators: {
     appIsrStatus: false,
@@ -15,7 +11,6 @@ const nextConfig: NextConfig = {
   
   // Disable telemetry collection
   telemetry: false,
->>>>>>> origin/main
 
   // Image optimization
   images: {
