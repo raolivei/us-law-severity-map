@@ -18,6 +18,15 @@ Interactive choropleth map showing US law severity scores and crime statistics. 
 
 **CLUSTER**: Deployed on the **`eldertree`** Raspberry Pi k3s cluster (when enabled).
 
+## Security Requirements
+
+### ALWAYS USE HTTPS
+
+- ✅ **Production**: HTTPS required (AWS CloudFront supports this)
+- ✅ **Development**: `localhost` for local testing
+- ✅ **Public Access**: Serve via HTTPS (CloudFront/CDN)
+- ❌ **NEVER**: HTTP for public-facing deployments
+
 ## Project Structure
 
 - `main.py` - Main visualization script (standalone Python script)
