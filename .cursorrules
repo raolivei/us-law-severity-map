@@ -1,5 +1,17 @@
 # US Law Severity Map - Cursor Rules
 
+## Workspace Configuration
+
+**IMPORTANT**: This project is part of the `raolivei` workspace. Workspace-level configuration is managed in the `workspace-config` repository.
+
+- **Port Assignments**: See `../workspace-config/ports/.env.ports` for assigned ports
+  - Web: Port `3000` (assigned to avoid conflicts)
+- **Workspace Conventions**: See `../workspace-config/docs/PROJECT_CONVENTIONS.md`
+- **Port Conflict Checker**: Run `../workspace-config/scripts/check-ports.sh` before starting services
+- **Workspace Scripts**: Available in `../workspace-config/scripts/`
+
+When starting services locally, always use the assigned ports from `workspace-config` to prevent conflicts with other projects.
+
 ## Project Overview
 
 Interactive choropleth map showing US law severity scores and crime statistics. Python-based data visualization project with AWS deployment.
@@ -78,11 +90,45 @@ Interactive choropleth map showing US law severity scores and crime statistics. 
 - Follow manual workflow (PR → Plan → Manual Apply)
 - See `docs/MANUAL_TERRAFORM_WORKFLOW.md`
 
+## Development Setup
+
+### Recommended: Docker Compose (Primary Method)
+
+```bash
+# Load port assignments
+source ../workspace-config/ports/.env.ports
+
+# Start web service with hot reload
+docker-compose up
+
+# Or start in detached mode
+docker-compose up -d
+```
+
+**Access:**
+- Web: http://localhost:3000
+
+**Benefits:**
+- Consistent environment (matches production)
+- Hot reload enabled via volume mounts
+- No local Node version conflicts
+- Single command to start everything
+
+See `../workspace-config/docs/DOCKER_COMPOSE_GUIDE.md` for complete guide.
+
+### Alternative: Local Development (Fallback)
+
+```bash
+cd webapp
+npm install
+npm run dev
+```
+
 ## Development Workflow
 
-1. Make changes to `main.py`
-2. Test locally: `python main.py`
-3. Verify HTML output opens correctly
+1. Make changes to source code
+2. Test locally with docker-compose: `docker-compose up`
+3. Verify changes hot-reload automatically
 4. Commit changes
 5. For k8s: update manifests and test with dry-run
 
