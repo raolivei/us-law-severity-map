@@ -104,3 +104,9 @@ echo -e "${YELLOW}To check logs:${NC}"
 echo "  kubectl logs -n us-law-severity-map -l app=us-law-severity-map --tail=50"
 
 
+
+
+
+
+
+
