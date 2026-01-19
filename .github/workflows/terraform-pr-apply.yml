@@ -14,6 +14,10 @@ permissions:
     statuses: write
     issues: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false  # Do not cancel deployments in progress
+
 jobs:
     terraform-apply:
         name: "Apply Infrastructure Changes"
