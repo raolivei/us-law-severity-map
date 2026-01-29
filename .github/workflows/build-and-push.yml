@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   build:
-    uses: raolivei/github-workflows/.github/workflows/docker-build.yml@1-implement-reusable-workflows
+    uses: raolivei/github-workflows/.github/workflows/docker-build.yml@main
     with:
       image-name: us-law-severity-map-web
     secrets:
