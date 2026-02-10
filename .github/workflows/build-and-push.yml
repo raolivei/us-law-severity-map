@@ -2,22 +2,29 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches:
-      - main
-      - dev
-    tags:
-      - "v*"
+    branches: [main]
+    paths:
+      - "webapp/**"
+      - "Dockerfile"
+      - "VERSION"
+      - ".github/workflows/build-and-push.yml"
   pull_request:
-    branches:
-      - main
+    branches: [main]
+    paths:
+      - "webapp/**"
+      - "Dockerfile"
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write
+
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-web:
     uses: raolivei/github-workflows/.github/workflows/docker-build.yml@main
     with:
       image-name: us-law-severity-map-web
